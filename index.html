@@ -1,0 +1,1661 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Contratos - Creche</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://www.gstatic.com/firebasejs/10.1.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.1.0/firebase-firestore-compat.js"></script>
+    <style>
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+        
+        /* Animation for success message */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.5s ease-out forwards;
+        }
+        
+        /* Tab animation */
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.3s ease-out;
+        }
+        
+        /* Custom checkbox */
+        .custom-checkbox {
+            position: relative;
+            padding-left: 28px;
+            cursor: pointer;
+            user-select: none;
+        }
+        .custom-checkbox input {
+            position: absolute;
+            opacity: 0;
+            cursor: pointer;
+            height: 0;
+            width: 0;
+        }
+        .checkmark {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 20px;
+            width: 20px;
+            background-color: #fff;
+            border: 2px solid #d1d5db;
+            border-radius: 4px;
+        }
+        .custom-checkbox:hover input ~ .checkmark {
+            background-color: #f3f4f6;
+        }
+        .custom-checkbox input:checked ~ .checkmark {
+            background-color: #4f46e5;
+            border-color: #4f46e5;
+        }
+        .checkmark:after {
+            content: "";
+            position: absolute;
+            display: none;
+        }
+        .custom-checkbox input:checked ~ .checkmark:after {
+            display: block;
+        }
+        .custom-checkbox .checkmark:after {
+            left: 6px;
+            top: 2px;
+            width: 5px;
+            height: 10px;
+            border: solid white;
+            border-width: 0 2px 2px 0;
+            transform: rotate(45deg);
+        }
+        
+        /* Modal animation */
+        @keyframes modalFadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .modal-animate {
+            animation: modalFadeIn 0.3s ease-out;
+        }
+        
+        /* Login animation */
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(-50px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .login-container {
+            animation: slideIn 0.5s ease-out;
+        }
+        
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Login Modal -->
+    <div id="loginModal" class="fixed inset-0 bg-gradient-to-br from-purple-900 via-purple-700 to-purple-500 flex items-center justify-center p-4 z-50">
+        <div class="bg-white/90 backdrop-blur-sm rounded-xl shadow-xl max-w-md w-full p-8 login-container">
+            <div class="text-center mb-8">
+                <i class="fas fa-child-reaching text-5xl text-indigo-600 mb-4"></i>
+                <h2 class="text-2xl font-bold text-gray-800">Acesso ao Sistema</h2>
+                <p class="text-gray-600 mt-2">Por favor, faça login para continuar</p>
+            </div>
+            
+            <form id="loginForm" class="space-y-6">
+                <div>
+                    <label for="username" class="block text-sm font-medium text-gray-700 mb-1">Usuário</label>
+                    <input type="text" id="username" name="username" required
+                        class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                        placeholder="Digite seu usuário">
+                </div>
+                
+                <div>
+                    <label for="password" class="block text-sm font-medium text-gray-700 mb-1">Senha</label>
+                    <input type="password" id="password" name="password" required
+                        class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                        placeholder="Digite sua senha">
+                </div>
+                
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center">
+                        <input id="remember-me" name="remember-me" type="checkbox" 
+                            class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded">
+                        <label for="remember-me" class="ml-2 block text-sm text-gray-700">
+                            Lembrar de mim
+                        </label>
+                    </div>
+                    
+                    <div class="text-sm">
+                        <a href="#" class="font-medium text-indigo-600 hover:text-indigo-500">
+                            Esqueceu a senha?
+                        </a>
+                    </div>
+                </div>
+                
+                <div>
+                    <button type="submit" 
+                        class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors duration-300">
+                        <i class="fas fa-sign-in-alt mr-2"></i> Entrar
+                    </button>
+                </div>
+            </form>
+            
+            <div id="loginError" class="mt-4 text-center text-sm text-red-600 hidden">
+                <i class="fas fa-exclamation-circle mr-1"></i>
+                <span id="errorText">Usuário ou senha incorretos</span>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Main App (hidden until login) -->
+    <div id="appContainer" class="hidden">
+        <div class="container mx-auto px-4 py-8">
+            <!-- Header -->
+            <header class="mb-8 text-center">
+                <div class="flex justify-between items-center mb-4">
+                    <div class="text-sm text-gray-500">
+                        <span id="userRoleBadge" class="px-3 py-1 rounded-full text-xs font-medium"></span>
+                    </div>
+                    <button id="logoutBtn" class="text-sm text-gray-600 hover:text-gray-900 flex items-center">
+                        <i class="fas fa-sign-out-alt mr-1"></i> Sair
+                    </button>
+                </div>
+                
+                <h1 class="text-3xl md:text-4xl font-bold text-indigo-700 mb-2">
+                    <i class="fas fa-child-reaching mr-2"></i>
+                    Sistema de Contratos - Creche
+                </h1>
+                <p class="text-gray-600">Gerenciamento de contratos de pais/responsáveis</p>
+            </header>
+            
+            <!-- Tabs Navigation -->
+            <div class="flex border-b border-gray-200 mb-8">
+                <button class="tab-btn active px-6 py-3 text-sm font-medium text-indigo-600 border-b-2 border-indigo-600 bg-white focus:outline-none" data-tab="register">
+                    <i class="fas fa-file-contract mr-2"></i> Cadastrar Contrato
+                </button>
+                <button class="tab-btn px-6 py-3 text-sm font-medium text-gray-500 hover:text-gray-700 focus:outline-none" data-tab="dashboard">
+                    <i class="fas fa-list-check mr-2"></i> Contratos Cadastrados
+                </button>
+            </div>
+            
+            <!-- Tab Contents -->
+            <div class="tab-contents">
+                <!-- Register Tab -->
+                <div id="register" class="tab-content active">
+                    <div class="bg-white rounded-xl shadow-md p-6 hover:shadow-lg transition-shadow duration-300">
+                        <h2 class="text-2xl font-semibold text-gray-800 mb-6 border-b pb-2 flex items-center">
+                            <i class="fas fa-file-contract mr-2 text-indigo-600"></i>
+                            <span id="formTitle">Novo Contrato</span>
+                        </h2>
+                        
+                        <form id="contractForm" class="space-y-4">
+                            <!-- Student Info -->
+                            <div class="space-y-2">
+                                <h3 class="text-lg font-medium text-gray-700 flex items-center">
+                                    <i class="fas fa-user-graduate mr-2 text-indigo-500"></i>
+                                    Dados do Aluno
+                                </h3>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div>
+                                        <label for="studentName" class="block text-sm font-medium text-gray-700">Nome do Aluno*</label>
+                                        <input type="text" id="studentName" name="studentName" required
+                                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2 border">
+                                    </div>
+                                    <div>
+                                        <label for="birthDate" class="block text-sm font-medium text-gray-700">Data de Nascimento*</label>
+                                        <input type="date" id="birthDate" name="birthDate" required
+                                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2 border">
+                                    </div>
+                                    <div>
+                                        <label for="classGroup" class="block text-sm font-medium text-gray-700">Série/Turma*</label>
+                                        <select id="classGroup" name="classGroup" required
+                                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2 border">
+                                            <option value="" disabled selected>Selecione</option>
+                                            <option value="Berçário">Berçário</option>
+                                            <option value="Maternal I">Maternal I</option>
+                                            <option value="Maternal II">Maternal II</option>
+                                            <option value="Jardim I">Jardim I</option>
+                                            <option value="Jardim II">Jardim II</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Guardian Info -->
+                            <div class="space-y-2 pt-4">
+                                <h3 class="text-lg font-medium text-gray-700 flex items-center">
+                                    <i class="fas fa-user-tie mr-2 text-indigo-500"></i>
+                                    Dados do Responsável
+                                </h3>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div>
+                                        <label for="guardianName" class="block text-sm font-medium text-gray-700">Nome do Responsável*</label>
+                                        <input type="text" id="guardianName" name="guardianName" required
+                                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2 border">
+                                    </div>
+                                    <div>
+                                        <label for="guardianCPF" class="block text-sm font-medium text-gray-700">CPF do Responsável*</label>
+                                        <input type="text" id="guardianCPF" name="guardianCPF" required
+                                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2 border"
+                                            placeholder="000.000.000-00">
+                                    </div>
+                                    <div>
+                                        <label for="phone" class="block text-sm font-medium text-gray-700">Telefone*</label>
+                                        <input type="tel" id="phone" name="phone" required
+                                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2 border"
+                                            placeholder="(00) 00000-0000">
+                                    </div>
+                                    <div>
+                                        <label for="address" class="block text-sm font-medium text-gray-700">Endereço*</label>
+                                        <input type="text" id="address" name="address" required
+                                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2 border">
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Contract Info -->
+                            <div class="space-y-2 pt-4">
+                                <h3 class="text-lg font-medium text-gray-700 flex items-center">
+                                    <i class="fas fa-file-signature mr-2 text-indigo-500"></i>
+                                    Dados do Contrato
+                                </h3>
+                                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                    <div>
+                                        <label for="startDate" class="block text-sm font-medium text-gray-700">Data de Início*</label>
+                                        <input type="date" id="startDate" name="startDate" required
+                                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2 border">
+                                    </div>
+                                    <div>
+                                        <label for="monthlyFee" class="block text-sm font-medium text-gray-700">Valor da Mensalidade*</label>
+                                        <div class="relative mt-1 rounded-md shadow-sm">
+                                            <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                                                <span class="text-gray-500 sm:text-sm">R$</span>
+                                            </div>
+                                            <input type="number" id="monthlyFee" name="monthlyFee" step="0.01" required
+                                                class="block w-full rounded-md border-gray-300 pl-8 focus:border-indigo-500 focus:ring-indigo-500 p-2 border">
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label for="dueDate" class="block text-sm font-medium text-gray-700">Dia de Vencimento*</label>
+                                        <select id="dueDate" name="dueDate" required
+                                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2 border">
+                                            <option value="" disabled selected>Selecione</option>
+                                            <option value="5">Dia 5</option>
+                                            <option value="10">Dia 10</option>
+                                            <option value="15">Dia 15</option>
+                                            <option value="20">Dia 20</option>
+                                            <option value="25">Dia 25</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Submit Button -->
+                            <div class="pt-6">
+                                <button type="submit" id="submitBtn"
+                                    class="w-full flex justify-center items-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors duration-300">
+                                    <i class="fas fa-save mr-2"></i>
+                                    <span id="submitBtnText">Salvar Contrato</span>
+                                </button>
+                                <button type="button" id="cancelEditBtn" class="w-full mt-3 flex justify-center items-center py-3 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors duration-300 hidden">
+                                    <i class="fas fa-times mr-2"></i>
+                                    Cancelar Edição
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                
+                <!-- Dashboard Tab -->
+                <div id="dashboard" class="tab-content">
+                    <div class="bg-white rounded-xl shadow-md p-6 hover:shadow-lg transition-shadow duration-300">
+                        <div class="flex justify-between items-center mb-6 border-b pb-2">
+                            <h2 class="text-2xl font-semibold text-gray-800 flex items-center">
+                                <i class="fas fa-list-check mr-2 text-indigo-600"></i>
+                                Contratos Cadastrados
+                            </h2>
+                            <div class="flex items-center space-x-4">
+                                <button id="exportBtn" class="text-sm text-indigo-600 hover:text-indigo-800 flex items-center">
+                                    <i class="fas fa-file-export mr-1"></i> Exportar
+                                </button>
+                                <button id="settingsBtn" class="text-sm text-indigo-600 hover:text-indigo-800 flex items-center ${currentUser && currentUser.role === 'Administrador' ? '' : 'hidden'}">
+                                    <i class="fas fa-cog mr-1"></i> Configurações
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- Dashboard Stats -->
+                        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+                            <div class="bg-indigo-50 rounded-lg p-4">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <p class="text-sm text-indigo-600 font-medium">Total de Contratos</p>
+                                        <h3 class="text-2xl font-bold text-indigo-800" id="totalContracts">0</h3>
+                                    </div>
+                                    <div class="bg-indigo-100 p-3 rounded-full">
+                                        <i class="fas fa-file-contract text-indigo-600"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="bg-green-50 rounded-lg p-4">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <p class="text-sm text-green-600 font-medium">Ativos</p>
+                                        <h3 class="text-2xl font-bold text-green-800" id="activeContracts">0</h3>
+                                    </div>
+                                    <div class="bg-green-100 p-3 rounded-full">
+                                        <i class="fas fa-check-circle text-green-600"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="bg-blue-50 rounded-lg p-4">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <p class="text-sm text-blue-600 font-medium">Total Recebido</p>
+                                        <h3 class="text-2xl font-bold text-blue-800" id="totalReceived">R$ 0,00</h3>
+                                    </div>
+                                    <div class="bg-blue-100 p-3 rounded-full">
+                                        <i class="fas fa-money-bill-wave text-blue-600"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="bg-purple-50 rounded-lg p-4">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <p class="text-sm text-purple-600 font-medium">Turmas</p>
+                                        <h3 class="text-2xl font-bold text-purple-800" id="totalClasses">0</h3>
+                                    </div>
+                                    <div class="bg-purple-100 p-3 rounded-full">
+                                        <i class="fas fa-users text-purple-600"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Search and Filter -->
+                        <div class="mb-4 grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div class="relative">
+                                <input type="text" id="searchInput" placeholder="Buscar por aluno ou responsável..."
+                                    class="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                                <div class="absolute left-3 top-2.5 text-gray-400">
+                                    <i class="fas fa-search"></i>
+                                </div>
+                            </div>
+                            <div>
+                                <select id="classFilter" class="w-full pl-3 pr-10 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                                    <option value="">Todas as turmas</option>
+                                    <option value="Berçário">Berçário</option>
+                                    <option value="Maternal I">Maternal I</option>
+                                    <option value="Maternal II">Maternal II</option>
+                                    <option value="Jardim I">Jardim I</option>
+                                    <option value="Jardim II">Jardim II</option>
+                                </select>
+                            </div>
+                            <div class="flex items-center">
+                                <label class="custom-checkbox text-sm text-gray-700 mr-4">
+                                    Mostrar apenas ativos
+                                    <input type="checkbox" id="activeFilter">
+                                    <span class="checkmark"></span>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <!-- Contracts Table -->
+                        <div class="overflow-x-auto rounded-lg border border-gray-200">
+                            <table class="min-w-full divide-y divide-gray-200">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            Aluno
+                                        </th>
+                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            Responsável
+                                        </th>
+                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            Turma
+                                        </th>
+                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            Pagamento
+                                        </th>
+                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            Status
+                                        </th>
+                                        <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            Ações
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody id="contractsTableBody" class="bg-white divide-y divide-gray-200">
+                                    <!-- Contracts will be loaded here -->
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                        <!-- Empty State -->
+                        <div id="emptyState" class="text-center py-10">
+                            <i class="fas fa-file-alt text-4xl text-gray-300 mb-3"></i>
+                            <p class="text-gray-500">Nenhum contrato cadastrado ainda</p>
+                        </div>
+                        
+                        <!-- Pagination -->
+                        <div class="flex items-center justify-between mt-4 px-4 py-3 bg-white border-t border-gray-200 sm:px-6">
+                            <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+                                <div>
+                                    <p class="text-sm text-gray-700">
+                                        Mostrando <span class="font-medium" id="paginationFrom">0</span> a <span class="font-medium" id="paginationTo">0</span> de <span class="font-medium" id="paginationTotal">0</span> resultados
+                                    </p>
+                                </div>
+                                <div>
+                                    <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+                                        <button id="prevPage" class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                                            <span class="sr-only">Anterior</span>
+                                            <i class="fas fa-chevron-left"></i>
+                                        </button>
+                                        <div id="pageNumbers" class="flex">
+                                            <!-- Page numbers will be inserted here -->
+                                        </div>
+                                        <button id="nextPage" class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                                            <span class="sr-only">Próximo</span>
+                                            <i class="fas fa-chevron-right"></i>
+                                        </button>
+                                    </nav>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Success Message -->
+            <div id="successMessage" class="fixed bottom-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg hidden fade-in">
+                <div class="flex items-center">
+                    <i class="fas fa-check-circle mr-2"></i>
+                    <span id="successText">Contrato salvo com sucesso!</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Contract Details Modal -->
+        <div id="contractModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 hidden">
+            <div class="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto modal-animate">
+                <div class="flex justify-between items-center border-b px-6 py-4">
+                    <h3 class="text-xl font-semibold text-gray-800">Detalhes do Contrato</h3>
+                    <button id="closeModalBtn" class="text-gray-500 hover:text-gray-700">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="p-6 space-y-4" id="modalContent">
+                    <!-- Contract details will be loaded here -->
+                </div>
+                <div class="px-6 py-4 border-t flex justify-end space-x-3">
+                    <button id="printContractBtn" class="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                        <i class="fas fa-print mr-2"></i> Imprimir
+                    </button>
+                    <button id="editContractBtn" class="px-4 py-2 border border-transparent rounded-md text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                        <i class="fas fa-edit mr-2"></i> Editar
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Delete Confirmation Modal -->
+        <div id="deleteModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 hidden">
+            <div class="bg-white rounded-lg shadow-xl max-w-md w-full modal-animate">
+                <div class="px-6 py-4 border-b">
+                    <h3 class="text-lg font-semibold text-gray-800">Confirmar Exclusão</h3>
+                </div>
+                <div class="p-6">
+                    <p class="text-gray-600">Tem certeza que deseja excluir este contrato? Esta ação não pode ser desfeita.</p>
+                </div>
+                <div class="px-6 py-4 border-t flex justify-end space-x-3">
+                    <button id="cancelDeleteBtn" class="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                        Cancelar
+                    </button>
+                    <button id="confirmDeleteBtn" class="px-4 py-2 border border-transparent rounded-md text-sm font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 ${currentUser && currentUser.role === 'Administrador' ? '' : 'hidden'}">
+                        <i class="fas fa-trash-alt mr-2"></i> Excluir
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Payment Confirmation Modal -->
+        <div id="paymentModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 hidden">
+            <div class="bg-white rounded-lg shadow-xl max-w-md w-full modal-animate">
+                <div class="flex justify-between items-center border-b px-6 py-4">
+                    <h3 class="text-xl font-semibold text-gray-800">Confirmar Pagamento</h3>
+                    <button id="closePaymentModalBtn" class="text-gray-500 hover:text-gray-700">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="p-6 space-y-4">
+                    <div id="paymentInfo" class="space-y-2">
+                        <!-- Payment info will be loaded here -->
+                    </div>
+                    <div>
+                        <label for="paymentDate" class="block text-sm font-medium text-gray-700 mb-1">Data do Pagamento*</label>
+                        <input type="date" id="paymentDate" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2 border" required>
+                    </div>
+                    <div>
+                        <label for="paymentAmount" class="block text-sm font-medium text-gray-700 mb-1">Valor Pago*</label>
+                        <div class="relative mt-1 rounded-md shadow-sm">
+                            <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                                <span class="text-gray-500 sm:text-sm">R$</span>
+                            </div>
+                            <input type="number" id="paymentAmount" step="0.01" class="block w-full rounded-md border-gray-300 pl-8 focus:border-indigo-500 focus:ring-indigo-500 p-2 border" required>
+                        </div>
+                    </div>
+                </div>
+                <div class="px-6 py-4 border-t flex justify-end space-x-3">
+                    <button id="cancelPaymentBtn" class="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                        Cancelar
+                    </button>
+                    <button id="confirmPaymentBtn" class="px-4 py-2 border border-transparent rounded-md text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+                        <i class="fas fa-check-circle mr-2"></i> Confirmar Pagamento
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Firebase configuration
+        let firebaseConfig = {
+            apiKey: "AIzaSyDAosaYFbu-IBdn1KNLQLfJ7BG0sFdX2Cw",
+            authDomain: "crechecontratos.firebaseapp.com",
+            projectId: "crechecontratos",
+            storageBucket: "crechecontratos.appspot.com",
+            messagingSenderId: "885692827049",
+            appId: "1:885692827049:web:9a0b94a9310fadbe0930b8",
+        };
+
+        let firebaseApp;
+        let db;
+        let currentPage = 1;
+        const contractsPerPage = 10;
+        let allContracts = [];
+        let filteredContracts = [];
+        let currentContractId = null;
+        let isEditing = false;
+        let currentUser = null;
+
+        // Initialize Firebase
+        function initializeFirebase() {
+            try {
+                // Check if Firebase is already initialized
+                if (!firebase.apps.length) {
+                    firebaseApp = firebase.initializeApp(firebaseConfig);
+                    db = firebase.firestore();
+                    console.log("Firebase inicializado com sucesso");
+                } else {
+                    firebaseApp = firebase.app();
+                    db = firebase.firestore();
+                }
+            } catch (error) {
+                console.error("Erro ao inicializar Firebase:", error);
+            }
+        }
+
+        initializeFirebase();
+
+        // Login functionality
+        const loginForm = document.getElementById('loginForm');
+        const loginModal = document.getElementById('loginModal');
+        const appContainer = document.getElementById('appContainer');
+        const logoutBtn = document.getElementById('logoutBtn');
+        const userRoleBadge = document.getElementById('userRoleBadge');
+        const loginError = document.getElementById('loginError');
+
+        // Valid users
+        const validUsers = {
+            'operador': {
+                password: 'admin123',
+                role: 'Operador',
+                permissions: {
+                    canDelete: false,
+                    canExport: true,
+                    canEdit: true,
+                    canRegister: true
+                }
+            },
+            'admin': {
+                password: 'admin123',
+                role: 'Administrador',
+                permissions: {
+                    canDelete: true,
+                    canExport: true,
+                    canEdit: true,
+                    canRegister: true
+                }
+            }
+        };
+
+        // Handle login
+        loginForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            const username = document.getElementById('username').value.toLowerCase();
+            const password = document.getElementById('password').value;
+            
+            // Validate credentials
+            if (validUsers[username] && validUsers[username].password === password) {
+                // Successful login
+                currentUser = {
+                    username: username,
+                    role: validUsers[username].role,
+                    permissions: validUsers[username].permissions
+                };
+                
+                // Hide login modal and show app
+                loginModal.classList.add('hidden');
+                appContainer.classList.remove('hidden');
+                
+                // Update UI with user role
+                updateUserUI();
+                
+                // Load contracts
+                loadContracts();
+            } else {
+                // Show error message
+                loginError.classList.remove('hidden');
+            }
+        });
+
+        // Update UI based on user role
+        function updateUserUI() {
+            if (!currentUser) return;
+            
+            // Set role badge
+            if (userRoleBadge) {
+                userRoleBadge.textContent = currentUser.role;
+                
+                // Style based on role
+                if (currentUser.role === 'Administrador') {
+                    userRoleBadge.classList.add('bg-purple-100', 'text-purple-800');
+                } else {
+                    userRoleBadge.classList.add('bg-blue-100', 'text-blue-800');
+                }
+            }
+            
+            // Hide delete buttons if user can't delete
+            if (!currentUser.permissions.canDelete) {
+                document.querySelectorAll('.delete-btn').forEach(btn => {
+                    btn.classList.add('hidden');
+                });
+                
+                // Also hide from modal if open
+                const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
+                if (confirmDeleteBtn) {
+                    confirmDeleteBtn.classList.add('hidden');
+                }
+            }
+        }
+
+        // Handle logout
+        if (logoutBtn) {
+            logoutBtn.addEventListener('click', () => {
+                currentUser = null;
+                appContainer.classList.add('hidden');
+                loginModal.classList.remove('hidden');
+                loginError.classList.add('hidden');
+                document.getElementById('loginForm').reset();
+                // Clear any existing contracts data
+                allContracts = [];
+                filteredContracts = [];
+                currentPage = 1;
+                currentContractId = null;
+                isEditing = false;
+            });
+        }
+
+        // Tab functionality
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                // Remove active class from all buttons and tabs
+                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active', 'text-indigo-600', 'border-indigo-600'));
+                document.querySelectorAll('.tab-btn').forEach(b => b.classList.add('text-gray-500'));
+                document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+                
+                // Add active class to clicked button and corresponding tab
+                btn.classList.add('active', 'text-indigo-600', 'border-indigo-600');
+                btn.classList.remove('text-gray-500');
+                const tabId = btn.getAttribute('data-tab');
+                document.getElementById(tabId).classList.add('active');
+
+                // If dashboard tab is clicked, refresh contracts
+                if (tabId === 'dashboard') {
+                    loadContracts();
+                }
+            });
+        });
+
+        // Save contract to Firestore
+        async function saveToFirestore(contract) {
+            try {
+                if (isEditing && currentContractId) {
+                    // Update existing contract
+                    await db.collection("contratos").doc(currentContractId).update(contract);
+                    console.log("Contrato atualizado no Firestore");
+                    showSuccessMessage("Contrato atualizado com sucesso!");
+                } else {
+                    // Add new contract
+                    contract.payments = []; // Initialize payments array
+                    contract.status = "Ativo"; // Initial status
+                    contract.createdAt = new Date().toISOString();
+                    await db.collection("contratos").add(contract);
+                    console.log("Contrato salvo no Firestore");
+                    showSuccessMessage("Contrato salvo com sucesso!");
+                }
+                loadContracts();
+            } catch (error) {
+                console.error("Erro ao salvar no Firestore:", error);
+                throw error;
+            }
+        }
+
+        // Form submission
+        const contractForm = document.getElementById("contractForm");
+        const submitBtn = document.getElementById("submitBtn");
+
+        contractForm.addEventListener("submit", async (e) => {
+            e.preventDefault();
+
+            const formData = new FormData(contractForm);
+            const contract = {
+                studentName: formData.get("studentName"),
+                birthDate: formData.get("birthDate"),
+                classGroup: formData.get("classGroup"),
+                guardianName: formData.get("guardianName"),
+                guardianCPF: formData.get("guardianCPF").replace(/\D/g, ""),
+                phone: formData.get("phone").replace(/\D/g, ""),
+                address: formData.get("address"),
+                startDate: formData.get("startDate"),
+                monthlyFee: parseFloat(formData.get("monthlyFee")),
+                dueDate: formData.get("dueDate"),
+                status: "Ativo", // Default status
+                createdAt: new Date().toISOString(),
+            };
+
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Salvando...';
+
+            try {
+                await saveToFirestore(contract);
+                contractForm.reset();
+                resetFormState();
+                
+                // Switch to dashboard tab after successful submission
+                document.querySelector('[data-tab="dashboard"]').click();
+            } catch (err) {
+                console.error("Erro ao salvar contrato:", err);
+                showSuccessMessage("Erro ao salvar contrato: " + err.message);
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<i class="fas fa-save mr-2"></i> Salvar Contrato';
+            }
+        });
+
+        // Reset form to initial state
+        function resetFormState() {
+            isEditing = false;
+            currentContractId = null;
+            
+            const formTitle = document.getElementById('formTitle');
+            const submitBtnText = document.getElementById('submitBtnText');
+            const cancelEditBtn = document.getElementById('cancelEditBtn');
+            
+            if (formTitle) formTitle.textContent = 'Novo Contrato';
+            if (submitBtnText) submitBtnText.textContent = 'Salvar Contrato';
+            if (cancelEditBtn) cancelEditBtn.classList.add('hidden');
+        }
+
+        // Show success message
+        function showSuccessMessage(msg) {
+            const successMessage = document.getElementById("successMessage");
+            const successText = document.getElementById("successText");
+            
+            if (successMessage && successText) {
+                successText.textContent = msg;
+                successMessage.classList.remove("hidden");
+                
+                // Change color based on message type
+                if (msg.includes("Erro")) {
+                    successMessage.classList.remove("bg-green-500");
+                    successMessage.classList.add("bg-red-500");
+                } else {
+                    successMessage.classList.remove("bg-red-500");
+                    successMessage.classList.add("bg-green-500");
+                }
+                
+                setTimeout(() => successMessage.classList.add("hidden"), 3000);
+            }
+        }
+
+        // Format CPF
+        function formatCPF(cpf) {
+            if (!cpf) return '';
+            cpf = cpf.replace(/\D/g, '');
+            return cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, "$1.$2.$3-$4");
+        }
+
+        // Format phone number
+        function formatPhone(phone) {
+            if (!phone) return '';
+            phone = phone.replace(/\D/g, '');
+            return phone.replace(/(\d{2})(\d{5})(\d{4})/, "($1) $2-$3");
+        }
+
+        // Format currency
+        function formatCurrency(value) {
+            if (!value) return 'R$ 0,00';
+            return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value);
+        }
+
+        // Format date
+        function formatDate(dateString) {
+            if (!dateString) return '';
+            const options = { day: '2-digit', month: '2-digit', year: 'numeric' };
+            return new Date(dateString).toLocaleDateString('pt-BR', options);
+        }
+
+        // Check if contract is expired
+        function checkContractStatus(contract) {
+            if (!contract.startDate) return "Inativo";
+            
+            const today = new Date();
+            const startDate = new Date(contract.startDate);
+            const endDate = new Date(startDate);
+            endDate.setFullYear(startDate.getFullYear() + 1); // Assume 1 year contract
+            
+            if (today > endDate) {
+                return "Vencido";
+            }
+            
+            // Get current month and year
+            const currentMonth = today.getMonth() + 1;
+            const currentYear = today.getFullYear();
+            const currentDay = today.getDate();
+            
+            // Get due day from contract (default to 5 if not set)
+            const dueDay = parseInt(contract.dueDate) || 5;
+            
+            // Check if there's a payment for current month
+            if (contract.payments && contract.payments.length > 0) {
+                const currentPayment = contract.payments.find(p => {
+                    const paymentDate = new Date(p.date);
+                    return paymentDate.getMonth() + 1 === currentMonth &&
+                            paymentDate.getFullYear() === currentYear;
+                });
+                
+                if (currentPayment) {
+                    return "Ativo";
+                }
+            }
+            
+            // If today is before the due day, status is "Pendente"
+            if (currentDay <= dueDay) {
+                return "Pendente";
+            }
+            
+            // If today is after the due day and no payment, status is "Atraso"
+            return "Atraso";
+        }
+
+        // Calculate total received for a contract
+        function calculateTotalReceived(contract) {
+            if (!contract.payments || contract.payments.length === 0) return 0;
+            return contract.payments.reduce((sum, payment) => sum + (payment.amount || 0), 0);
+        }
+
+        // Load contracts from Firestore with pagination
+        function loadContracts(filter = "", classFilter = "", activeFilter = false) {
+            let query = db.collection("contratos").orderBy("createdAt", "desc");
+
+            query.get()
+                .then((snapshot) => {
+                    allContracts = [];
+                    snapshot.forEach((doc) => {
+                        const contract = doc.data();
+                        contract.id = doc.id;
+                        
+                        // Calculate status based on current date and payments
+                        contract.status = checkContractStatus(contract);
+                        
+                        allContracts.push(contract);
+                    });
+
+                    // Apply filters
+                    filteredContracts = allContracts.filter(contract => {
+                        const matchesSearch = `${contract.studentName} ${contract.guardianName} ${contract.guardianCPF}`.toLowerCase().includes(filter.toLowerCase());
+                        const matchesClass = classFilter ? contract.classGroup === classFilter : true;
+                        const matchesActive = activeFilter ? contract.status === "Ativo" : true;
+                        
+                        return matchesSearch && matchesClass && matchesActive;
+                    });
+
+                    // Update stats
+                    updateDashboardStats();
+
+                    // Render paginated contracts
+                    renderPaginatedContracts();
+                })
+                .catch((error) => {
+                    console.error("Erro ao carregar contratos:", error);
+                });
+        }
+
+        // Update dashboard statistics
+        function updateDashboardStats() {
+            // Total contracts
+            const totalContractsEl = document.getElementById('totalContracts');
+            if (totalContractsEl) totalContractsEl.textContent = allContracts.length;
+
+            // Active contracts
+            const activeCount = allContracts.filter(c => c.status === "Ativo").length;
+            const activeContractsEl = document.getElementById('activeContracts');
+            if (activeContractsEl) activeContractsEl.textContent = activeCount;
+
+            // Total received
+            const totalReceived = allContracts.reduce((sum, c) => {
+                return sum + calculateTotalReceived(c);
+            }, 0);
+            const totalReceivedEl = document.getElementById('totalReceived');
+            if (totalReceivedEl) totalReceivedEl.textContent = formatCurrency(totalReceived);
+
+            // Unique classes
+            const uniqueClasses = new Set(allContracts.map(c => c.classGroup));
+            const totalClassesEl = document.getElementById('totalClasses');
+            if (totalClassesEl) totalClassesEl.textContent = uniqueClasses.size;
+        }
+
+        // Render paginated contracts
+        function renderPaginatedContracts() {
+            const contractsTableBody = document.getElementById("contractsTableBody");
+            const emptyState = document.getElementById("emptyState");
+
+            contractsTableBody.innerHTML = "";
+
+            // Calculate pagination
+            const totalPages = Math.ceil(filteredContracts.length / contractsPerPage);
+            const startIndex = (currentPage - 1) * contractsPerPage;
+            const endIndex = Math.min(startIndex + contractsPerPage, filteredContracts.length);
+            const paginatedContracts = filteredContracts.slice(startIndex, endIndex);
+
+            // Update pagination info
+            const paginationFrom = document.getElementById('paginationFrom');
+            const paginationTo = document.getElementById('paginationTo');
+            const paginationTotal = document.getElementById('paginationTotal');
+            
+            if (paginationFrom) paginationFrom.textContent = filteredContracts.length > 0 ? startIndex + 1 : 0;
+            if (paginationTo) paginationTo.textContent = endIndex;
+            if (paginationTotal) paginationTotal.textContent = filteredContracts.length;
+
+            // Render page numbers
+            renderPageNumbers(totalPages);
+
+            // Show empty state if no contracts
+            if (paginatedContracts.length === 0) {
+                if (emptyState) emptyState.classList.remove("hidden");
+                return;
+            }
+
+            if (emptyState) emptyState.classList.add("hidden");
+
+            // Render contracts
+            paginatedContracts.forEach((contract) => {
+                const totalReceived = calculateTotalReceived(contract);
+                const status = contract.status;
+
+                const row = document.createElement("tr");
+                row.className = "hover:bg-gray-50";
+                
+                // Check user permissions for delete button
+                const deleteButtonStyle = currentUser && currentUser.role === 'Administrador' ? '' : 'hidden';
+                
+                row.innerHTML = `
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="flex items-center">
+                            <div class="flex-shrink-0 h-10 w-10 rounded-full bg-indigo-100 flex items-center justify-center">
+                                <i class="fas fa-child text-indigo-600"></i>
+                            </div>
+                            <div class="ml-4">
+                                <div class="text-sm font-medium text-gray-900">${contract.studentName}</div>
+                                <div class="text-sm text-gray-500">${formatDate(contract.birthDate)}</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="text-sm text-gray-900">${contract.guardianName}</div>
+                        <div class="text-sm text-gray-500">${formatPhone(contract.phone)}</div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-indigo-100 text-indigo-800">
+                            ${contract.classGroup}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        ${formatCurrency(totalReceived)} / ${formatCurrency(contract.monthlyFee)}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                            status === "Ativo" ? 'bg-green-100 text-green-800' : 
+                            status === "Pendente" ? 'bg-yellow-100 text-yellow-800' : 
+                            'bg-red-100 text-red-800'
+                        }">
+                            ${status}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                        <button class="text-indigo-600 hover:text-indigo-900 mr-3 view-btn" data-id="${contract.id}">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                        <button class="text-yellow-600 hover:text-yellow-900 mr-3 edit-btn" data-id="${contract.id}">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="text-green-600 hover:text-green-900 mr-3 payment-btn" data-id="${contract.id}">
+                            <i class="fas fa-money-bill-wave"></i>
+                        </button>
+                        <button class="text-red-600 hover:text-red-900 delete-btn ${deleteButtonStyle}" data-id="${contract.id}">
+                            <i class="fas fa-trash-alt"></i>
+                        </button>
+                    </td>
+                `;
+                contractsTableBody.appendChild(row);
+            });
+
+            // Add event listeners to buttons
+            addContractButtonListeners();
+        }
+
+        // Render page numbers for pagination
+        function renderPageNumbers(totalPages) {
+            const pageNumbersContainer = document.getElementById('pageNumbers');
+            if (!pageNumbersContainer) return;
+            
+            pageNumbersContainer.innerHTML = '';
+
+            // Always show first page
+            addPageNumber(1);
+
+            // Show ellipsis if needed
+            if (currentPage > 3) {
+                const ellipsis = document.createElement('span');
+                ellipsis.className = 'relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700';
+                ellipsis.textContent = '...';
+                pageNumbersContainer.appendChild(ellipsis);
+            }
+
+            // Show current page and neighbors
+            for (let i = Math.max(2, currentPage - 1); i <= Math.min(totalPages - 1, currentPage + 1); i++) {
+                addPageNumber(i);
+            }
+
+            // Show ellipsis if needed
+            if (currentPage < totalPages - 2) {
+                const ellipsis = document.createElement('span');
+                ellipsis.className = 'relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700';
+                ellipsis.textContent = '...';
+                pageNumbersContainer.appendChild(ellipsis);
+            }
+
+            // Always show last page if different from first
+            if (totalPages > 1) {
+                addPageNumber(totalPages);
+            }
+
+            // Update pagination button states
+            const prevPageBtn = document.getElementById('prevPage');
+            const nextPageBtn = document.getElementById('nextPage');
+            
+            if (prevPageBtn) prevPageBtn.disabled = currentPage === 1;
+            if (nextPageBtn) nextPageBtn.disabled = currentPage === totalPages;
+        }
+
+        // Helper function to add a page number button
+        function addPageNumber(page) {
+            const pageNumbersContainer = document.getElementById('pageNumbers');
+            if (!pageNumbersContainer) return;
+            
+            const pageBtn = document.createElement('button');
+            pageBtn.className = `relative inline-flex items-center px-4 py-2 border text-sm font-medium ${currentPage === page ? 'z-10 bg-indigo-50 border-indigo-500 text-indigo-600' : 'bg-white border-gray-300 text-gray-500 hover:bg-gray-50'}`;
+            pageBtn.textContent = page;
+            pageBtn.addEventListener('click', () => {
+                currentPage = page;
+                renderPaginatedContracts();
+            });
+            pageNumbersContainer.appendChild(pageBtn);
+        }
+
+        // Add event listeners to contract buttons
+        function addContractButtonListeners() {
+            // View buttons
+            document.querySelectorAll('.view-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const contractId = e.currentTarget.getAttribute('data-id');
+                    viewContract(contractId);
+                });
+            });
+
+            // Edit buttons
+            document.querySelectorAll('.edit-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const contractId = e.currentTarget.getAttribute('data-id');
+                    editContract(contractId);
+                });
+            });
+
+            // Payment buttons
+            document.querySelectorAll('.payment-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const contractId = e.currentTarget.getAttribute('data-id');
+                    showPaymentModal(contractId);
+                });
+            });
+
+            // Delete buttons
+            document.querySelectorAll('.delete-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    if (!currentUser || currentUser.role !== 'Administrador') {
+                        showSuccessMessage("Você não tem permissão para excluir contratos");
+                        return;
+                    }
+                    
+                    const contractId = e.currentTarget.getAttribute('data-id');
+                    showDeleteConfirmation(contractId);
+                });
+            });
+        }
+
+        // View contract details
+        function viewContract(contractId) {
+            const contract = allContracts.find(c => c.id === contractId);
+            if (!contract) return;
+
+            const totalReceived = calculateTotalReceived(contract);
+            const status = contract.status;
+
+            const modalContent = document.getElementById('modalContent');
+            if (!modalContent) return;
+            
+            modalContent.innerHTML = `
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="bg-indigo-50 p-4 rounded-lg">
+                        <h4 class="text-lg font-medium text-indigo-800 mb-3 border-b pb-2">
+                            <i class="fas fa-user-graduate mr-2"></i> Dados do Aluno
+                        </h4>
+                        <div class="space-y-2">
+                            <p><span class="font-medium">Nome:</span> ${contract.studentName}</p>
+                            <p><span class="font-medium">Data de Nascimento:</span> ${formatDate(contract.birthDate)}</p>
+                            <p><span class="font-medium">Turma:</span> ${contract.classGroup}</p>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-green-50 p-4 rounded-lg">
+                        <h4 class="text-lg font-medium text-green-800 mb-3 border-b pb-2">
+                            <i class="fas fa-user-tie mr-2"></i> Dados do Responsável
+                        </h4>
+                        <div class="space-y-2">
+                            <p><span class="font-medium">Nome:</span> ${contract.guardianName}</p>
+                            <p><span class="font-medium">CPF:</span> ${formatCPF(contract.guardianCPF)}</p>
+                            <p><span class="font-medium">Telefone:</span> ${formatPhone(contract.phone)}</p>
+                            <p><span class="font-medium">Endereço:</span> ${contract.address}</p>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-blue-50 p-4 rounded-lg md:col-span-2">
+                        <h4 class="text-lg font-medium text-blue-800 mb-3 border-b pb-2">
+                            <i class="fas fa-file-signature mr-2"></i> Dados do Contrato
+                        </h4>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div>
+                                <p><span class="font-medium">Data de Início:</span> ${formatDate(contract.startDate)}</p>
+                            </div>
+                            <div>
+                                <p><span class="font-medium">Mensalidade:</span> ${formatCurrency(contract.monthlyFee)}</p>
+                            </div>
+                            <div>
+                                <p><span class="font-medium">Dia de Vencimento:</span> ${contract.dueDate}</p>
+                            </div>
+                            <div>
+                                <p><span class="font-medium">Status:</span>
+                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                                        status === "Ativo" ? 'bg-green-100 text-green-800' : 
+                                        status === "Pendente" ? 'bg-yellow-100 text-yellow-800' : 
+                                        'bg-red-100 text-red-800'
+                                    }">
+                                        ${status}
+                                    </span>
+                                </p>
+                            </div>
+                            <div>
+                                <p><span class="font-medium">Total Recebido:</span> ${formatCurrency(totalReceived)}</p>
+                            </div>
+                            <div>
+                                <p><span class="font-medium">Data de Cadastro:</span> ${formatDate(contract.createdAt)}</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    ${contract.payments && contract.payments.length > 0 ? `
+                    <div class="bg-purple-50 p-4 rounded-lg md:col-span-2">
+                        <h4 class="text-lg font-medium text-purple-800 mb-3 border-b pb-2">
+                            <i class="fas fa-money-bill-wave mr-2"></i> Histórico de Pagamentos
+                        </h4>
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full divide-y divide-gray-200">
+                                <thead class="bg-purple-100">
+                                    <tr>
+                                        <th class="px-4 py-2 text-left text-xs font-medium text-purple-800 uppercase tracking-wider">Data</th>
+                                        <th class="px-4 py-2 text-left text-xs font-medium text-purple-800 uppercase tracking-wider">Valor</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="bg-white divide-y divide-gray-200">
+                                    ${contract.payments.map(payment => `
+                                        <tr>
+                                            <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-500">${formatDate(payment.date)}</td>
+                                            <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-500">${formatCurrency(payment.amount)}</td>
+                                        </tr>
+                                    `).join('')}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    ` : ''}
+                </div>
+            `;
+
+            // Set current contract ID
+            currentContractId = contractId;
+
+            // Show modal
+            const contractModal = document.getElementById('contractModal');
+            if (contractModal) contractModal.classList.remove('hidden');
+            
+            // Show delete button in modal regardless of permissions (permissions are checked before showing modal)
+        }
+
+        // Edit contract
+        function editContract(contractId) {
+            // Switch to register tab
+            document.querySelector('[data-tab="register"]').click();
+
+            // Find contract
+            const contract = allContracts.find(c => c.id === contractId);
+            if (!contract) return;
+
+            // Fill form with contract data
+            document.getElementById('studentName').value = contract.studentName;
+            document.getElementById('birthDate').value = contract.birthDate.split('T')[0];
+            document.getElementById('classGroup').value = contract.classGroup;
+            document.getElementById('guardianName').value = contract.guardianName;
+            document.getElementById('guardianCPF').value = formatCPF(contract.guardianCPF);
+            document.getElementById('phone').value = formatPhone(contract.phone);
+            document.getElementById('address').value = contract.address;
+            document.getElementById('startDate').value = contract.startDate.split('T')[0];
+            document.getElementById('monthlyFee').value = contract.monthlyFee;
+            document.getElementById('dueDate').value = contract.dueDate;
+
+            // Set editing state
+            isEditing = true;
+            currentContractId = contractId;
+
+            // Update form title and button
+            document.getElementById('formTitle').textContent = 'Editar Contrato';
+            document.getElementById('submitBtnText').textContent = 'Atualizar Contrato';
+            document.getElementById('cancelEditBtn').classList.remove('hidden');
+
+            // Scroll to top
+            window.scrollTo(0, 0);
+        }
+
+        // Show payment modal
+        function showPaymentModal(contractId) {
+            const contract = allContracts.find(c => c.id === contractId);
+            if (!contract) return;
+
+            // Set current contract ID
+            currentContractId = contractId;
+
+            // Fill payment info
+            const paymentInfo = document.getElementById('paymentInfo');
+            if (paymentInfo) {
+                paymentInfo.innerHTML = `
+                    <p><span class="font-medium">Aluno:</span> ${contract.studentName}</p>
+                    <p><span class="font-medium">Responsável:</span> ${contract.guardianName}</p>
+                    <p><span class="font-medium">Mensalidade:</span> ${formatCurrency(contract.monthlyFee)}</p>
+                    <p><span class="font-medium">Status:</span>
+                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                            contract.status === "Ativo" ? 'bg-green-100 text-green-800' : 
+                            contract.status === "Pendente" ? 'bg-yellow-100 text-yellow-800' : 
+                            'bg-red-100 text-red-800'
+                        }">
+                            ${contract.status}
+                        </span>
+                    </p>
+                `;
+            }
+
+            // Set today's date as default
+            const today = new Date();
+            const formattedDate = today.toISOString().split('T')[0];
+            document.getElementById('paymentDate').value = formattedDate;
+
+            // Set monthly fee as default amount
+            document.getElementById('paymentAmount').value = contract.monthlyFee;
+
+            // Show modal
+            const paymentModal = document.getElementById('paymentModal');
+            if (paymentModal) paymentModal.classList.remove('hidden');
+        }
+
+        // Process payment
+        async function processPayment(contractId, paymentData) {
+            try {
+                // Get the contract
+                const contractRef = db.collection("contratos").doc(contractId);
+                const doc = await contractRef.get();
+                
+                if (!doc.exists) {
+                    throw new Error("Contrato não encontrado");
+                }
+                
+                // Update the contract with new payment
+                const contract = doc.data();
+                const payments = contract.payments || [];
+
+                // Add new payment
+                payments.push({
+                    date: paymentData.date,
+                    amount: parseFloat(paymentData.amount)
+                });
+
+                // Update contract in Firestore
+                await contractRef.update({
+                    payments: payments
+                });
+
+                showSuccessMessage("Pagamento registrado com sucesso!");
+                loadContracts();
+            } catch (error) {
+                console.error("Erro ao processar pagamento:", error);
+                throw error;
+            }
+        }
+
+        // Show delete confirmation
+        function showDeleteConfirmation(contractId) {
+            if (!currentUser || currentUser.role !== 'Administrador') {
+                showSuccessMessage("Você não tem permissão para excluir contratos");
+                return;
+            }
+            
+            currentContractId = contractId;
+            const deleteModal = document.getElementById('deleteModal');
+            if (deleteModal) deleteModal.classList.remove('hidden');
+        }
+
+        // Delete contract
+        async function deleteContract(contractId) {
+            try {
+                await db.collection("contratos").doc(contractId).delete();
+                showSuccessMessage("Contrato excluído com sucesso!");
+                loadContracts();
+            } catch (error) {
+                console.error("Erro ao excluir contrato:", error);
+                showSuccessMessage("Erro ao excluir contrato: " + error.message);
+            }
+        }
+
+        // Search functionality
+        const searchInput = document.getElementById("searchInput");
+        if (searchInput) {
+            searchInput.addEventListener("input", (e) => {
+                currentPage = 1;
+                const classFilter = document.getElementById('classFilter').value;
+                const activeFilter = document.getElementById('activeFilter').checked;
+                loadContracts(e.target.value, classFilter, activeFilter);
+            });
+        }
+
+        // Class filter
+        const classFilter = document.getElementById('classFilter');
+        if (classFilter) {
+            classFilter.addEventListener('change', (e) => {
+                currentPage = 1;
+                const searchValue = searchInput.value;
+                const activeFilter = document.getElementById('activeFilter').checked;
+                loadContracts(searchValue, e.target.value, activeFilter);
+            });
+        }
+
+        // Active filter
+        const activeFilter = document.getElementById('activeFilter');
+        if (activeFilter) {
+            activeFilter.addEventListener('change', (e) => {
+                currentPage = 1;
+                const searchValue = searchInput.value;
+                const classFilterValue = document.getElementById('classFilter').value;
+                loadContracts(searchValue, classFilterValue, e.target.checked);
+            });
+        }
+
+        // Pagination buttons
+        const prevPageBtn = document.getElementById('prevPage');
+        if (prevPageBtn) {
+            prevPageBtn.addEventListener('click', () => {
+                if (currentPage > 1) {
+                    currentPage--;
+                    renderPaginatedContracts();
+                }
+            });
+        }
+
+        const nextPageBtn = document.getElementById('nextPage');
+        if (nextPageBtn) {
+            nextPageBtn.addEventListener('click', () => {
+                const totalPages = Math.ceil(filteredContracts.length / contractsPerPage);
+                if (currentPage < totalPages) {
+                    currentPage++;
+                    renderPaginatedContracts();
+                }
+            });
+        }
+
+        // Modal close button
+        const closeModalBtn = document.getElementById('closeModalBtn');
+        if (closeModalBtn) {
+            closeModalBtn.addEventListener('click', () => {
+                const contractModal = document.getElementById('contractModal');
+                if (contractModal) contractModal.classList.add('hidden');
+                currentContractId = null;
+            });
+        }
+
+        // Print contract button
+        const printContractBtn = document.getElementById('printContractBtn');
+        if (printContractBtn) {
+            printContractBtn.addEventListener('click', () => {
+                window.print();
+            });
+        }
+
+        // Edit contract button in modal
+        const editContractBtn = document.getElementById('editContractBtn');
+        if (editContractBtn) {
+            editContractBtn.addEventListener('click', () => {
+                if (currentContractId) {
+                    const contractModal = document.getElementById('contractModal');
+                    if (contractModal) contractModal.classList.add('hidden');
+                    editContract(currentContractId);
+                }
+            });
+        }
+
+        // Payment modal buttons
+        const closePaymentModalBtn = document.getElementById('closePaymentModalBtn');
+        if (closePaymentModalBtn) {
+            closePaymentModalBtn.addEventListener('click', () => {
+                const paymentModal = document.getElementById('paymentModal');
+                if (paymentModal) paymentModal.classList.add('hidden');
+                currentContractId = null;
+            });
+        }
+
+        const cancelPaymentBtn = document.getElementById('cancelPaymentBtn');
+        if (cancelPaymentBtn) {
+            cancelPaymentBtn.addEventListener('click', () => {
+                const paymentModal = document.getElementById('paymentModal');
+                if (paymentModal) paymentModal.classList.add('hidden');
+                currentContractId = null;
+            });
+        }
+
+        const confirmPaymentBtn = document.getElementById('confirmPaymentBtn');
+        if (confirmPaymentBtn) {
+            confirmPaymentBtn.addEventListener('click', async () => {
+                const paymentDate = document.getElementById('paymentDate').value;
+                const paymentAmount = document.getElementById('paymentAmount').value;
+                
+                if (!paymentDate || !paymentAmount) {
+                    showSuccessMessage("Por favor, preencha a data e o valor do pagamento");
+                    return;
+                }
+
+                const paymentData = {
+                    date: paymentDate,
+                    amount: paymentAmount
+                };
+
+                try {
+                    await processPayment(currentContractId, paymentData);
+                    const paymentModal = document.getElementById('paymentModal');
+                    if (paymentModal) paymentModal.classList.add('hidden');
+                    currentContractId = null;
+                } catch (error) {
+                    showSuccessMessage("Erro ao registrar pagamento: " + error.message);
+                }
+            });
+        }
+
+        // Delete modal buttons
+        const cancelDeleteBtn = document.getElementById('cancelDeleteBtn');
+        if (cancelDeleteBtn) {
+            cancelDeleteBtn.addEventListener('click', () => {
+                const deleteModal = document.getElementById('deleteModal');
+                if (deleteModal) deleteModal.classList.add('hidden');
+                currentContractId = null;
+            });
+        }
+
+        const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
+        if (confirmDeleteBtn) {
+            confirmDeleteBtn.addEventListener('click', () => {
+                if (currentContractId) {
+                    deleteContract(currentContractId);
+                    const deleteModal = document.getElementById('deleteModal');
+                    if (deleteModal) deleteModal.classList.add('hidden');
+                    currentContractId = null;
+                }
+            });
+        }
+
+        // Cancel edit button
+        const cancelEditBtn = document.getElementById('cancelEditBtn');
+        if (cancelEditBtn) {
+            cancelEditBtn.addEventListener('click', () => {
+                contractForm.reset();
+                resetFormState();
+            });
+        }
+
+        // Settings functionality
+        const settingsBtn = document.getElementById('settingsBtn');
+        const settingsModal = document.getElementById('settingsModal');
+        const closeSettingsBtn = document.getElementById('closeSettingsBtn');
+        const cancelSettingsBtn = document.getElementById('cancelSettingsBtn');
+        const saveSettingsBtn = document.getElementById('saveSettingsBtn');
+
+        if (settingsBtn) {
+            settingsBtn.addEventListener('click', () => {
+                settingsModal.classList.remove('hidden');
+            });
+        }
+
+        if (closeSettingsBtn) {
+            closeSettingsBtn.addEventListener('click', () => {
+                settingsModal.classList.add('hidden');
+            });
+        }
+
+        if (cancelSettingsBtn) {
+            cancelSettingsBtn.addEventListener('click', () => {
+                settingsModal.classList.add('hidden');
+            });
+        }
+
+        if (saveSettingsBtn) {
+            saveSettingsBtn.addEventListener('click', () => {
+                const newPassword = document.getElementById('newOperatorPassword').value;
+                const confirmPassword = document.getElementById('confirmOperatorPassword').value;
+                
+                if (!newPassword || !confirmPassword) {
+                    showSuccessMessage("Por favor, preencha ambos os campos de senha");
+                    return;
+                }
+                
+                if (newPassword !== confirmPassword) {
+                    showSuccessMessage("As senhas não coincidem");
+                    return;
+                }
+                
+                // Update operator password
+                validUsers['operador'].password = newPassword;
+                settingsModal.classList.add('hidden');
+                document.getElementById('newOperatorPassword').value = '';
+                document.getElementById('confirmOperatorPassword').value = '';
+                showSuccessMessage("Senha do operador atualizada com sucesso!");
+            });
+        }
+
+        // Export data
+        const exportBtn = document.getElementById('exportBtn');
+        if (exportBtn) {
+            exportBtn.addEventListener('click', () => {
+                const dataStr = JSON.stringify(allContracts, null, 2);
+                const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+
+                const exportFileDefaultName = `contratos-creche-${new Date().toISOString().split('T')[0]}.json`;
+
+                const linkElement = document.createElement('a');
+                linkElement.setAttribute('href', dataUri);
+                linkElement.setAttribute('download', exportFileDefaultName);
+                linkElement.click();
+
+                showSuccessMessage("Dados exportados com sucesso!");
+            });
+        }
+    </script>
+</body>
+</html>
