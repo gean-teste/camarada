@@ -852,6 +852,12 @@
                                 </div>
                                 <input type="number" id="paymentAmount" step="0.01" class="block w-full rounded-md border-gray-300 pl-8 focus:border-indigo-500 focus:ring-indigo-500 p-2 border" required>
                             </div>
+                            <div class="mt-2 flex items-center">
+                                <input type="checkbox" id="proportionalPayment" class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded">
+                                <label for="proportionalPayment" class="ml-2 block text-sm text-gray-700">
+                                    Pagamento Proporcional
+                                </label>
+                            </div>
                         </div>
                     </div>
                     
@@ -1980,7 +1986,11 @@
                                     ${contract.payments.map(payment => `
                                         <tr>
                                             <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-500">${formatDate(payment.date)}</td>
-                                            <td class="px=4 py-2 whitespace-nowrap text-sm text-gray-500">${formatCurrency(payment.amount)}</td>
+                                            <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-500">
+                                                ${formatCurrency(payment.amount)}
+                                                ${payment.proportional ? 
+                                                    `<span class="text-xs text-gray-400 ml-1">(Proporcional)</span>` : ''}
+                                            </td>
                                         </tr>
                                     `).join('')}
                                 </tbody>
@@ -2039,7 +2049,9 @@
                                 <p class="text-sm">${statusText}</p>
                             </div>
                             <div class="text-lg font-semibold">
-                                ${formatCurrency(payment.amount)}
+                                ${payment.proportional ? 
+                                    `${formatCurrency(payment.amount)} <span class="text-xs">(Proporcional)</span>` : 
+                                    formatCurrency(payment.fullAmount || payment.amount)}
                             </div>
                         </div>
                     </div>
@@ -2166,25 +2178,34 @@
                 
                 const contract = doc.data();
                 const payments = contract.payments || [];
+                const paymentDate = new Date(paymentData.date);
                 
                 // Verificar se já existe um pagamento para este mês
-                if (!paymentData.advanced) { // Só verificamos para pagamentos não adiantados
-                    const paymentDate = new Date(paymentData.date);
-                    const hasPaymentForThisMonth = payments.some(p => {
-                        const existingDate = new Date(p.date);
-                        return existingDate.getMonth() === paymentDate.getMonth() &&
-                               existingDate.getFullYear() === paymentDate.getFullYear();
-                    });
-                    
-                    if (hasPaymentForThisMonth) {
-                        throw new Error("Já existe um pagamento registrado para este mês. Apenas pagamentos adiantados são permitidos.");
+                const hasPaymentForThisMonth = payments.some(p => {
+                    const existingDate = new Date(p.date);
+                    return existingDate.getMonth() === paymentDate.getMonth() &&
+                           existingDate.getFullYear() === paymentDate.getFullYear();
+                });
+                
+                // Se já existe pagamento e não é adiantado, bloquear
+                if (hasPaymentForThisMonth && !paymentData.advanced) {
+                    throw new Error("Já existe um pagamento registrado para este mês. Selecione a opção 'Pagamento Adiantado' para registrar outro pagamento.");
+                }
+                
+                // Se é pagamento adiantado, verificar se já existe para o mesmo mês
+                if (paymentData.advanced && hasPaymentForThisMonth) {
+                    const confirmAdvance = confirm("Já existe um pagamento para este mês. Deseja realmente registrar um pagamento adicional?");
+                    if (!confirmAdvance) {
+                        return;
                     }
                 }
                 
                 payments.push({
                     date: paymentData.date,
                     amount: parseFloat(paymentData.amount),
-                    advanced: paymentData.advanced || false
+                    advanced: paymentData.advanced || false,
+                    proportional: paymentData.proportional || false,
+                    fullAmount: contract.monthlyFee
                 });
                 
                 await contractRef.update({
@@ -2392,7 +2413,8 @@
                 const paymentData = {
                     date: paymentDate,
                     amount: paymentAmount,
-                    advanced: isAdvancedPayment
+                    advanced: isAdvancedPayment,
+                    proportional: document.getElementById('proportionalPayment').checked
                 };
 
                 try {
