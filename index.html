@@ -24,7 +24,6 @@
             background: #555;
         }
         
-        
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
@@ -34,7 +33,6 @@
             animation: fadeIn 0.5s ease-out forwards;
         }
         
-        
         .tab-content {
             display: none;
         }
@@ -42,7 +40,6 @@
             display: block;
             animation: fadeIn 0.3s ease-out;
         }
-        
         
         .custom-checkbox {
             position: relative;
@@ -92,8 +89,6 @@
             transform: rotate(45deg);
         }
         
-        
-       
         @keyframes modalFadeIn {
             from { opacity: 0; transform: translateY(-20px); }
             to { opacity: 1; transform: translateY(0); }
@@ -102,7 +97,6 @@
         .modal-animate {
             animation: modalFadeIn 0.3s ease-out;
         }
-        
         
         @keyframes slideIn {
             from { opacity: 0; transform: translateY(-50px); }
@@ -113,6 +107,101 @@
             animation: slideIn 0.5s ease-out;
         }
         
+        .whatsapp-btn:hover {
+            transform: scale(1.1);
+            transition: transform 0.2s ease-in-out;
+        }
+        
+        /* Timeline style */
+        .timeline {
+            position: relative;
+            padding-left: 1.5rem;
+        }
+        
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 5px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background-color: #e5e7eb;
+        }
+        
+        .timeline-item {
+            position: relative;
+            padding-bottom: 1.5rem;
+        }
+        
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -1.5rem;
+            top: 0;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background-color: #e5e7eb;
+            border: 2px solid #fff;
+        }
+        
+        .timeline-item.paid::before {
+            background-color: #10b981;
+        }
+        
+        .timeline-item.pending::before {
+            background-color: #f59e0b;
+        }
+        
+        .timeline-item.future::before {
+            background-color: #d1d5db;
+        }
+        
+        .timeline-content {
+            padding: 0.5rem 1rem;
+            border-radius: 0.375rem;
+            background-color: #f9fafb;
+        }
+        
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+                box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+            }
+            70% {
+                transform: scale(1.05);
+                box-shadow: 0 0 0 10px rgba(16, 185, 129, 0);
+            }
+            100% {
+                transform: scale(1);
+                box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
+            }
+        }
+        
+        /* Pagamento adiantado */
+        .advanced-payment {
+            background-color: #f0fdf4;
+            border-left: 4px solid #10b981;
+        }
+        
+        .payment-options {
+            transition: all 0.3s ease;
+        }
+        
+        .payment-options.hidden {
+            max-height: 0;
+            opacity: 0;
+            overflow: hidden;
+        }
+        
+        .payment-options.visible {
+            max-height: 200px;
+            opacity: 1;
+        }
     </style>
 </head>
 <body class="bg-gray-50 min-h-screen">
@@ -142,7 +231,7 @@
                 
                 <div class="flex items-center justify-between">
                     <div class="flex items-center">
-                        <input id="remember-me" name="remember-me" type="checkbox" 
+                        <input id="remember-me" name="remember-me" type="checkbox"
                             class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded">
                         <label for="remember-me" class="ml-2 block text-sm text-gray-700">
                             Lembrar de mim
@@ -157,7 +246,7 @@
                 </div>
                 
                 <div>
-                    <button type="submit" 
+                    <button type="submit"
                         class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors duration-300">
                         <i class="fas fa-sign-in-alt mr-2"></i> Entrar
                     </button>
@@ -189,7 +278,7 @@
                     <i class="fas fa-child-reaching mr-2"></i>
                     Sistema de Contratos - Creche
                 </h1>
-                <p class="text-gray-600">Gerenciamento de contratos de pais/responsáveis</p>
+                <p class="text-gray-600">Gerenciamento de contratos e pendências</p>
             </header>
             
             <!-- navegação -->
@@ -200,11 +289,13 @@
                 <button class="tab-btn px-6 py-3 text-sm font-medium text-gray-500 hover:text-gray-700 focus:outline-none" data-tab="dashboard">
                     <i class="fas fa-list-check mr-2"></i> Contratos Cadastrados
                 </button>
+                <button class="tab-btn px-6 py-3 text-sm font-medium text-gray-500 hover:text-gray-700 focus:outline-none" data-tab="pendencies">
+                    <i class="fas fa-clock-rotate-left mr-2"></i> Pendências
+                </button>
             </div>
             
-           
             <div class="tab-contents">
-               
+                
                 <div id="register" class="tab-content active">
                     <div class="bg-white rounded-xl shadow-md p-6 hover:shadow-lg transition-shadow duration-300">
                         <h2 class="text-2xl font-semibold text-gray-800 mb-6 border-b pb-2 flex items-center">
@@ -245,7 +336,6 @@
                                 </div>
                             </div>
                             
-                            
                             <div class="space-y-2 pt-4">
                                 <h3 class="text-lg font-medium text-gray-700 flex items-center">
                                     <i class="fas fa-user-tie mr-2 text-indigo-500"></i>
@@ -276,7 +366,6 @@
                                     </div>
                                 </div>
                             </div>
-                            
                             
                             <div class="space-y-2 pt-4">
                                 <h3 class="text-lg font-medium text-gray-700 flex items-center">
@@ -421,7 +510,6 @@
                             </div>
                         </div>
                         
-                        
                         <div class="overflow-x-auto rounded-lg border border-gray-200">
                             <table class="min-w-full divide-y divide-gray-200">
                                 <thead class="bg-gray-50">
@@ -447,12 +535,11 @@
                                     </tr>
                                 </thead>
                                 <tbody id="contractsTableBody" class="bg-white divide-y divide-gray-200">
-                                   
+                                    
                                 </tbody>
                             </table>
                         </div>
                         
-                       
                         <div id="emptyState" class="text-center py-10">
                             <i class="fas fa-file-alt text-4xl text-gray-300 mb-3"></i>
                             <p class="text-gray-500">Nenhum contrato cadastrado ainda</p>
@@ -463,7 +550,7 @@
                             <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
                                 <div>
                                     <p class="text-sm text-gray-700">
-                                        Mostrando <span class="font-medium" id="paginationFrom">0</span> a <span class="font-medium" id="paginationTo">0</span> de <span class="font-medium" id="paginationTotal">0</span> resultados
+                                        Mostrando <span class="font-medium" id="paginationFrom">0</span> a <span class="font-medium", id="paginationTo">0</span> de <span class="font-medium", id="paginationTotal">0</span> resultados
                                     </p>
                                 </div>
                                 <div>
@@ -473,9 +560,134 @@
                                             <i class="fas fa-chevron-left"></i>
                                         </button>
                                         <div id="pageNumbers" class="flex">
-                                            
+                                                                                        
                                         </div>
                                         <button id="nextPage" class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                                            <span class="sr-only">Próximo</span>
+                                            <i class="fas fa-chevron-right"></i>
+                                        </button>
+                                    </nav>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Pendências Tab -->
+                <div id="pendencies" class="tab-content">
+                    <div class="bg-white rounded-xl shadow-md p-6 hover:shadow-lg transition-shadow duration-300">
+                        <div class="flex justify-between items-center mb-6 border-b pb-2">
+                            <h2 class="text-2xl font-semibold text-gray-800 flex items-center">
+                                <i class="fas fa-clock-rotate-left mr-2 text-indigo-600"></i>
+                                Pendências de Pagamento
+                            </h2>
+                            <div class="flex items-center">
+                                <button id="refreshPendencies" class="text-sm text-indigo-600 hover:text-indigo-800 flex items-center">
+                                    <i class="fas fa-sync-alt mr-1"></i> Atualizar
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- Pendencies status -->
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                            <div class="bg-yellow-50 rounded-lg p-4">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <p class="text-sm text-yellow-600 font-medium">Pendentes</p>
+                                        <h3 class="text-2xl font-bold text-yellow-800" id="pendingPayments">0</h3>
+                                    </div>
+                                    <div class="bg-yellow-100 p-3 rounded-full">
+                                        <i class="fas fa-clock text-yellow-600"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="bg-red-50 rounded-lg p-4">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <p class="text-sm text-red-600 font-medium">Atrasados</p>
+                                        <h3 class="text-2xl font-bold text-red-800" id="overduePayments">0</h3>
+                                    </div>
+                                    <div class="bg-red-100 p-3 rounded-full">
+                                        <i class="fas fa-exclamation-triangle text-red-600"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="bg-blue-50 rounded-lg p-4">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <p class="text-sm text-blue-600 font-medium">Próximos</p>
+                                        <h3 class="text-2xl font-bold text-blue-800" id="nextPayments">0</h3>
+                                    </div>
+                                    <div class="bg-blue-100 p-3 rounded-full">
+                                        <i class="fas fa-calendar-alt text-blue-600"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <div class="relative">
+                                <input type="text" id="searchPendencies" placeholder="Buscar por aluno ou responsável..."
+                                    class="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                                <div class="absolute left-3 top-2.5 text-gray-400">
+                                    <i class="fas fa-search"></i>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="overflow-x-auto rounded-lg border border-gray-200">
+                            <table class="min-w-full divide-y divide-gray-200">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            Aluno
+                                        </th>
+                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            Mensalidade
+                                        </th>
+                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            Vencimento
+                                        </th>
+                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            Status
+                                        </th>
+                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            Dias
+                                        </th>
+                                        <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            Ações
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody id="pendenciesTableBody" class="bg-white divide-y divide-gray-200">
+                                    <!-- Conteúdo dinâmico será inserido aqui -->
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                        <div id="emptyPendencies" class="text-center py-10">
+                            <i class="fas fa-check-circle text-4xl text-gray-300 mb-3"></i>
+                            <p class="text-gray-500">Nenhuma pendência encontrada</p>
+                        </div>
+                        
+                        <!-- paginação -->
+                        <div class="flex items-center justify-between mt=4 px-4 py-3 bg-white border-t border-gray-200 sm:px-6">
+                            <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+                                <div>
+                                    <p class="text-sm text-gray-700">
+                                        Mostrando <span class="font-medium" id="pendenciesFrom">0</span> a <span class="font-medium", id="pendenciesTo">0</span> de <span class="font-medium" id="pendenciesTotal">0</span> resultados
+                                    </p>
+                                </div>
+                                <div>
+                                    <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+                                        <button id="prevPendencies" class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                                            <span class="sr-only">Anterior</span>
+                                            <i class="fas fa-chevron-left"></i>
+                                        </button>
+                                        <div id="pendenciesNumbers" class="flex">
+                                            <!-- Números de página serão inseridos aqui -->
+                                        </div>
+                                        <button id="nextPendencies" class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
                                             <span class="sr-only">Próximo</span>
                                             <i class="fas fa-chevron-right"></i>
                                         </button>
@@ -496,7 +708,7 @@
             </div>
         </div>
         
-        
+        <!-- Contract Modal -->
         <div id="contractModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 hidden">
             <div class="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto modal-animate">
                 <div class="flex justify-between items-center border-b px-6 py-4">
@@ -506,7 +718,7 @@
                     </button>
                 </div>
                 <div class="p-6 space-y-4" id="modalContent">
-                    
+                    <!-- Conteúdo dinâmico será inserido aqui -->
                 </div>
                 <div class="px-6 py-4 border-t flex justify-end space-x-3">
                     <button id="printContractBtn" class="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
@@ -514,6 +726,58 @@
                     </button>
                     <button id="editContractBtn" class="px-4 py-2 border border-transparent rounded-md text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
                         <i class="fas fa-edit mr-2"></i> Editar
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Payment Timeline Modal -->
+        <div id="timelineModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z=50 hidden">
+            <div class="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto modal-animate">
+                <div class="flex justify-between items-center border-b px-6 py-4">
+                    <h3 class="text-xl font-semibold text-gray-800">Cronograma de Pagamentos</h3>
+                    <button id="closeTimelineModalBtn" class="text-gray-500 hover:text-gray-700">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="p-6 space-y-4">
+                    <div class="flex items-center justify-between mb-4">
+                        <div>
+                            <h4 class="text-lg font-medium text-gray-800" id="timelineStudentName"></h4>
+                            <p class="text-gray-600" id="timelineGuardianName"></p>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-gray-800 font-medium" id="timelineMonthlyFee"></p>
+                            <p class="text-sm text-gray-600">Vence dia <span id="timelineDueDay"></span></p>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-gray-50 p-4 rounded-lg mb-4">
+                        <h4 class="text-md font-medium text-gray-800 mb-2">Próximos 6 Meses</h4>
+                        <div class="timeline" id="paymentTimeline">
+                            <!-- Timeline items will be added here -->
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <h4 class="text-md font-medium text-gray-800 mb-2">Disponibilidade para Liberação</h4>
+                        <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4">
+                            <div class="flex">
+                                <div class="flex-shrink-0">
+                                    <i class="fas fa-info-circle text-yellow-400"></i>
+                                </div>
+                                <div class="ml-3">
+                                    <p class="text-sm text-yellow-700" id="releaseInfo">
+                                        Aguardando quitação das mensalidades para liberação.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="px-6 py=4 border-t flex justify-end space-x-3">
+                    <button id="registerPaymentBtn" class="px-4 py-2 border border-transparent rounded-md text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                        <i class="fas fa-money-bill-wave mr-2"></i> Registrar Pagamento
                     </button>
                 </div>
             </div>
@@ -539,7 +803,7 @@
             </div>
         </div>
         
-        <!-- modal de confirmação de pagamento -->
+        <!-- modal de confirmação de pagamento com opção de pagamento adiantado -->
         <div id="paymentModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 hidden">
             <div class="bg-white rounded-lg shadow-xl max-w-md w-full modal-animate">
                 <div class="flex justify-between items-center border-b px-6 py-4">
@@ -550,22 +814,77 @@
                 </div>
                 <div class="p-6 space-y-4">
                     <div id="paymentInfo" class="space-y-2">
-                        
+                        <!-- Payment info will be added here -->
                     </div>
-                    <div>
-                        <label for="paymentDate" class="block text-sm font-medium text-gray-700 mb-1">Data do Pagamento*</label>
-                        <input type="date" id="paymentDate" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2 border" required>
-                    </div>
-                    <div>
-                        <label for="paymentAmount" class="block text-sm font-medium text-gray-700 mb-1">Valor Pago*</label>
-                        <div class="relative mt-1 rounded-md shadow-sm">
-                            <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-                                <span class="text-gray-500 sm:text-sm">R$</span>
+                    
+                    <!-- Seção para selecionar o tipo de pagamento -->
+                    <div class="space-y-3">
+                        <label class="block text-sm font-medium text-gray-700">Tipo de Pagamento</label>
+                        <div class="flex space-x-4">
+                            <div class="flex items-center">
+                                <input id="currentPayment" name="paymentType" type="radio" checked
+                                    class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300">
+                                <label for="currentPayment" class="ml-2 block text-sm text-gray-700">
+                                    Mensalidade Atual
+                                </label>
                             </div>
-                            <input type="number" id="paymentAmount" step="0.01" class="block w-full rounded-md border-gray-300 pl-8 focus:border-indigo-500 focus:ring-indigo-500 p-2 border" required>
+                            <div class="flex items-center">
+                                <input id="advancedPayment" name="paymentType" type="radio"
+                                    class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300">
+                                <label for="advancedPayment" class="ml-2 block text-sm text-gray-700">
+                                    Pagamento Adiantado
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Opções de pagamento (mostrar/ocultar com base na seleção) -->
+                    <div id="currentPaymentOptions">
+                        <div>
+                            <label for="paymentDate" class="block text-sm font-medium text-gray-700 mb-1">Data do Pagamento*</label>
+                            <input type="date" id="paymentDate" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2 border" required>
+                        </div>
+                        <div>
+                            <label for="paymentAmount" class="block text-sm font-medium text-gray-700 mb-1">Valor Pago*</label>
+                            <div class="relative mt-1 rounded-md shadow-sm">
+                                <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                                    <span class="text-gray-500 sm:text-sm">R$</span>
+                                </div>
+                                <input type="number" id="paymentAmount" step="0.01" class="block w-full rounded-md border-gray-300 pl-8 focus:border-indigo-500 focus:ring-indigo-500 p-2 border" required>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div id="advancedPaymentOptions" class="payment-options hidden">
+                        <div class="bg-green-50 p-4 rounded-lg mb-4">
+                            <p class="text-green-700 text-sm"><i class="fas fa-info-circle mr-2"></i> Você está registrando um pagamento para o mês seguinte.</p>
+                        </div>
+                        <div>
+                            <label for="advancedMonth" class="block text-sm font-medium text-gray-700 mb-1">Mês do Pagamento*</label>
+                            <select id="advancedMonth" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2 border">
+                                <!-- Opções serão preenchidas dinamicamente -->
+                            </select>
+                        </div>
+                        <div>
+                            <label for="advancedPaymentDate" class="block text-sm font-medium text-gray-700 mb-1">Data do Pagamento*</label>
+                            <input type="date" id="advancedPaymentDate" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2 border" required>
+                        </div>
+                        <div>
+                            <label for="advancedPaymentAmount" class="block text-sm font-medium text-gray-700 mb-1">Valor Pago*</label>
+                            <div class="relative mt-1 rounded-md shadow-sm">
+                                <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                                    <span class="text-gray-500 sm/text-sm">R$</span>
+                                </div>
+                                <input type="number" id="advancedPaymentAmount" step="0.01" class="block w-full rounded-md border-gray-300 pl-8 focus:border-indigo-500 focus:ring-indigo-500 p-2 border" required>
+                            </div>
                         </div>
                     </div>
                 </div>
+                <br>
+                <br>
+                <br>
+                <hr>
+                <hr>
                 <div class="px-6 py-4 border-t flex justify-end space-x-3">
                     <button id="cancelPaymentBtn" class="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
                         Cancelar
@@ -592,12 +911,18 @@
         let firebaseApp;
         let db;
         let currentPage = 1;
+        let currentPendenciesPage = 1;
         const contractsPerPage = 10;
+        const pendenciesPerPage = 10;
         let allContracts = [];
         let filteredContracts = [];
+        let pendenciesList = [];
+        let filteredPendencies = [];
         let currentContractId = null;
         let isEditing = false;
         let currentUser = null;
+        let currentDueDate = null; // Variável para armazenar a data de vencimento atual
+        let nextDueDate = null;    // Variável para armazenar a data do próximo vencimento
 
         // inicializando o  Firebase
         function initializeFirebase() {
@@ -617,7 +942,6 @@
         }
 
         initializeFirebase();
-
         
         const loginForm = document.getElementById('loginForm');
         const loginModal = document.getElementById('loginModal');
@@ -625,8 +949,7 @@
         const logoutBtn = document.getElementById('logoutBtn');
         const userRoleBadge = document.getElementById('userRoleBadge');
         const loginError = document.getElementById('loginError');
-
-       
+        
         const validUsers = {
             'operador': {
                 password: 'admin123',
@@ -649,14 +972,12 @@
                 }
             }
         };
-
         
         loginForm.addEventListener('submit', (e) => {
             e.preventDefault();
             
             const username = document.getElementById('username').value.toLowerCase();
             const password = document.getElementById('password').value;
-            
             
             if (validUsers[username] && validUsers[username].password === password) {
                 
@@ -666,29 +987,23 @@
                     permissions: validUsers[username].permissions
                 };
                 
-                
                 loginModal.classList.add('hidden');
                 appContainer.classList.remove('hidden');
                 
-                
                 updateUserUI();
                 
-                
                 loadContracts();
+                loadPendencies();
             } else {
-                
                 loginError.classList.remove('hidden');
             }
         });
-
         
         function updateUserUI() {
             if (!currentUser) return;
             
-            
             if (userRoleBadge) {
                 userRoleBadge.textContent = currentUser.role;
-                
                 
                 if (currentUser.role === 'Administrador') {
                     userRoleBadge.classList.add('bg-purple-100', 'text-purple-800');
@@ -697,12 +1012,10 @@
                 }
             }
             
-            
             if (!currentUser.permissions.canDelete) {
                 document.querySelectorAll('.delete-btn').forEach(btn => {
                     btn.classList.add('hidden');
                 });
-                
                 
                 const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
                 if (confirmDeleteBtn) {
@@ -710,63 +1023,69 @@
                 }
             }
         }
-
         
         if (logoutBtn) {
             logoutBtn.addEventListener('click', () => {
-                
                 currentUser = null;
-                
                 location.reload();
             });
         }
-
         
         document.querySelectorAll('.tab-btn').forEach(btn => {
             btn.addEventListener('click', () => {
-                
                 document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active', 'text-indigo-600', 'border-indigo-600'));
                 document.querySelectorAll('.tab-btn').forEach(b => b.classList.add('text-gray-500'));
                 document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
-                
                 
                 btn.classList.add('active', 'text-indigo-600', 'border-indigo-600');
                 btn.classList.remove('text-gray-500');
                 const tabId = btn.getAttribute('data-tab');
                 document.getElementById(tabId).classList.add('active');
-
                 
                 if (tabId === 'dashboard') {
                     loadContracts();
+                } else if (tabId === 'pendencies') {
+                    loadPendencies();
                 }
             });
         });
-
         
+        async function checkCPFExists(cpf) {
+            const query = db.collection("contratos").where("guardianCPF", "==", cpf);
+            const snapshot = await query.get();
+            return !snapshot.empty;
+        }
+
         async function saveToFirestore(contract) {
             try {
                 if (isEditing && currentContractId) {
-                    
                     await db.collection("contratos").doc(currentContractId).update(contract);
                     console.log("Contrato atualizado no Firestore");
                     showSuccessMessage("Contrato atualizado com sucesso!");
                 } else {
+                    // Verificar se CPF já existe
+                    const cpfExists = await checkCPFExists(contract.guardianCPF);
+                    if (cpfExists) {
+                        throw new Error("Já existe um contrato cadastrado com este CPF");
+                    }
                     
-                    contract.payments = []; 
-                    contract.status = "Ativo"; 
+                    contract.payments = [];
+                    
+                    contract.status = "Ativo";
+                    
                     contract.createdAt = new Date().toISOString();
                     await db.collection("contratos").add(contract);
                     console.log("Contrato salvo no Firestore");
                     showSuccessMessage("Contrato salvo com sucesso!");
                 }
                 loadContracts();
+                loadPendencies();
             } catch (error) {
                 console.error("Erro ao salvar no Firestore:", error);
                 throw error;
             }
         }
-
-       
+        
         const contractForm = document.getElementById("contractForm");
         const submitBtn = document.getElementById("submitBtn");
 
@@ -774,18 +1093,27 @@
             e.preventDefault();
 
             const formData = new FormData(contractForm);
+            const rawCPF = formData.get("guardianCPF").replace(/\D/g, "");
+            
+            // Validação básica do CPF (11 dígitos)
+            if (rawCPF.length !== 11) {
+                showSuccessMessage("CPF inválido. Deve conter 11 dígitos.");
+                return;
+            }
+
             const contract = {
                 studentName: formData.get("studentName"),
                 birthDate: formData.get("birthDate"),
                 classGroup: formData.get("classGroup"),
                 guardianName: formData.get("guardianName"),
-                guardianCPF: formData.get("guardianCPF").replace(/\D/g, ""),
+                guardianCPF: rawCPF,
                 phone: formData.get("phone").replace(/\D/g, ""),
                 address: formData.get("address"),
                 startDate: formData.get("startDate"),
                 monthlyFee: parseFloat(formData.get("monthlyFee")),
                 dueDate: formData.get("dueDate"),
-                status: "Ativo", 
+                status: "Ativo",
+                
                 createdAt: new Date().toISOString(),
             };
 
@@ -797,7 +1125,6 @@
                 contractForm.reset();
                 resetFormState();
                 
-                
                 document.querySelector('[data-tab="dashboard"]').click();
             } catch (err) {
                 console.error("Erro ao salvar contrato:", err);
@@ -807,30 +1134,27 @@
                 submitBtn.innerHTML = '<i class="fas fa-save mr-2"></i> Salvar Contrato';
             }
         });
-
         
         function resetFormState() {
             isEditing = false;
             currentContractId = null;
-            
+
             const formTitle = document.getElementById('formTitle');
             const submitBtnText = document.getElementById('submitBtnText');
             const cancelEditBtn = document.getElementById('cancelEditBtn');
-            
+
             if (formTitle) formTitle.textContent = 'Novo Contrato';
             if (submitBtnText) submitBtnText.textContent = 'Salvar Contrato';
             if (cancelEditBtn) cancelEditBtn.classList.add('hidden');
         }
 
-       
         function showSuccessMessage(msg) {
             const successMessage = document.getElementById("successMessage");
             const successText = document.getElementById("successText");
-            
+
             if (successMessage && successText) {
                 successText.textContent = msg;
                 successMessage.classList.remove("hidden");
-                
                 
                 if (msg.includes("Erro")) {
                     successMessage.classList.remove("bg-green-500");
@@ -843,61 +1167,81 @@
                 setTimeout(() => successMessage.classList.add("hidden"), 3000);
             }
         }
-
         
         function formatCPF(cpf) {
             if (!cpf) return '';
             cpf = cpf.replace(/\D/g, '');
             return cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, "$1.$2.$3-$4");
         }
-
         
         function formatPhone(phone) {
             if (!phone) return '';
             phone = phone.replace(/\D/g, '');
             return phone.replace(/(\d{2})(\d{5})(\d{4})/, "($1) $2-$3");
         }
-
         
         function formatCurrency(value) {
             if (!value) return 'R$ 0,00';
             return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value);
         }
-
         
         function formatDate(dateString) {
             if (!dateString) return '';
             const options = { day: '2-digit', month: '2-digit', year: 'numeric' };
             return new Date(dateString).toLocaleDateString('pt-BR', options);
         }
-
+        
+        function calculateDaysBetweenDates(date1, date2) {
+            const oneDay = 24 * 60 * 60 * 1000; // hours*minutes*seconds*milliseconds
+            return Math.round(Math.abs((date1 - date2) / oneDay));
+        }
+        
+        function getPaymentStatus(paymentDate, dueDate, currentDate = new Date()) {
+            if (paymentDate) return 'paid';
+            
+            const dueDateObj = new Date(dueDate);
+            
+            if (currentDate > dueDateObj) {
+                return 'overdue';
+            } else if (currentDate.getMonth() === dueDateObj.getMonth() &&
+                      currentDate.getFullYear() === dueDateObj.getFullYear()) {
+                return 'pending';
+            } else {
+                return 'future';
+            }
+        }
+        
+        function getMonthName(monthIndex) {
+            const months = [
+                'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
+                'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'
+            ];
+            return months[monthIndex];
+        }
         
         function checkContractStatus(contract) {
             if (!contract.startDate) return "Inativo";
-            
+
             const today = new Date();
             const startDate = new Date(contract.startDate);
             const endDate = new Date(startDate);
-            endDate.setFullYear(startDate.getFullYear() + 1); 
+            endDate.setFullYear(startDate.getFullYear() + 1);
             
             if (today > endDate) {
                 return "Vencido";
             }
             
-            
             const currentMonth = today.getMonth() + 1;
             const currentYear = today.getFullYear();
             const currentDay = today.getDate();
             
-            
             const dueDay = parseInt(contract.dueDate) || 5;
-            
             
             if (contract.payments && contract.payments.length > 0) {
                 const currentPayment = contract.payments.find(p => {
                     const paymentDate = new Date(p.date);
                     return paymentDate.getMonth() + 1 === currentMonth &&
-                            paymentDate.getFullYear() === currentYear;
+                           paymentDate.getFullYear() === currentYear;
                 });
                 
                 if (currentPayment) {
@@ -905,22 +1249,91 @@
                 }
             }
             
-            
             if (currentDay <= dueDay) {
                 return "Pendente";
             }
             
-            
             return "Atraso";
         }
-
         
         function calculateTotalReceived(contract) {
             if (!contract.payments || contract.payments.length === 0) return 0;
             return contract.payments.reduce((sum, payment) => sum + (payment.amount || 0), 0);
         }
+        
+        function generateNextPayments(contract, monthsAhead = 6) {
+            if (!contract.startDate) return [];
 
-     
+            const today = new Date();
+            const startDate = new Date(contract.startDate);
+            const dueDate = parseInt(contract.dueDate) || 5;
+            const monthlyFee = contract.monthlyFee || 0;
+            
+            let payments = [];
+            
+            // Verificar pagamentos existentes
+            const existingPayments = contract.payments || [];
+            
+            // Gerar os próximos 6 meses de pagamentos
+            for (let i = 0; i < monthsAhead; i++) {
+                const paymentDate = new Date(startDate);
+                paymentDate.setMonth(today.getMonth() + i);
+                
+                // Ajustar para o dia de vencimento especificado no contrato
+                const paymentDueDate = new Date(paymentDate);
+                paymentDueDate.setDate(dueDate);
+                
+                // Verificar se este mês já foi pago
+                const existingPayment = existingPayments.find(p => {
+                    const paymentDate = new Date(p.date);
+                    return paymentDate.getMonth() === paymentDueDate.getMonth() &&
+                           paymentDate.getFullYear() === paymentDueDate.getFullYear();
+                });
+                
+                payments.push({
+                    month: getMonthName(paymentDueDate.getMonth()),
+                    year: paymentDueDate.getFullYear(),
+                    dueDate: paymentDueDate.toISOString().split('T')[0],
+                    status: existingPayment ? 'paid' : getPaymentStatus(existingPayment ? existingPayment.date : null, paymentDueDate),
+                    amount: monthlyFee,
+                    paid: !!existingPayment,
+                    paidDate: existingPayment ? existingPayment.date : null,
+                    paidAmount: existingPayment ? existingPayment.amount : null
+                });
+            }
+            
+            return payments;
+        }
+        
+        function calculateReleaseInfo(contract) {
+            if (!contract.startDate) return "Contrato sem data de início definida";
+
+            const today = new Date();
+            const startDate = new Date(contract.startDate);
+            const endDate = new Date(startDate);
+            endDate.setFullYear(startDate.getFullYear() + 1);
+            
+            if (today > endDate) {
+                return "Contrato vencido em " + formatDate(endDate);
+            }
+            
+            const payments = contract.payments || [];
+            const dueDate = parseInt(contract.dueDate) || 5;
+            
+            // Calcular quantos meses já se passaram desde o início
+            const monthsPassed = (today.getFullYear() - startDate.getFullYear()) * 12 + today.getMonth() - startDate.getMonth();
+            
+            // Verificar se todos os meses até hoje estão pagos
+            const allPaid = payments.length >= monthsPassed + 1;
+            
+            if (allPaid) {
+                return "Contrato em dia, disponível para liberação após vencimento do contrato em " + formatDate(endDate);
+            } else {
+                const unpaidMonths = monthsPassed + 1 - payments.length;
+                return `Faltam ${unpaidMonths} mês(es) para quitação. Próximo vencimento: dia ${dueDate} deste mês.`;
+            }
+        }
+        
         function loadContracts(filter = "", classFilter = "", activeFilter = false) {
             let query = db.collection("contratos").orderBy("createdAt", "desc");
 
@@ -931,12 +1344,10 @@
                         const contract = doc.data();
                         contract.id = doc.id;
                         
-                        
                         contract.status = checkContractStatus(contract);
                         
                         allContracts.push(contract);
                     });
-
                     
                     filteredContracts = allContracts.filter(contract => {
                         const matchesSearch = `${contract.studentName} ${contract.guardianName} ${contract.guardianCPF}`.toLowerCase().includes(filter.toLowerCase());
@@ -945,10 +1356,8 @@
                         
                         return matchesSearch && matchesClass && matchesActive;
                     });
-
                     
                     updateDashboardStats();
-
                     
                     renderPaginatedContracts();
                 })
@@ -956,56 +1365,171 @@
                     console.error("Erro ao carregar contratos:", error);
                 });
         }
-
+        
+        function loadPendencies(filter = "") {
+            if (allContracts.length === 0) {
+                // Se não carregamos os contratos ainda, carregamos primeiro
+                loadContracts(filter);
+                return;
+            }
+            
+            // Processa as pendências baseadas nos contratos existentes
+            processPendencies(filter);
+        }
+        
+        function processPendencies(filter = "") {
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            
+            pendenciesList = [];
+            
+            allContracts.forEach(contract => {
+                if (!contract.startDate) return;
+                
+                const startDate = new Date(contract.startDate);
+                const dueDay = parseInt(contract.dueDate) || 5;
+                const monthlyFee = contract.monthlyFee || 0;
+                
+                // Criar data de vencimento para o mês atual
+                currentDueDate = new Date();
+                currentDueDate.setDate(dueDay);
+                currentDueDate.setHours(23, 59, 59, 999);
+                
+                // Criar data de vencimento para o próximo mês
+                nextDueDate = new Date();
+                nextDueDate.setMonth(nextDueDate.getMonth() + 1);
+                nextDueDate.setDate(dueDay);
+                nextDueDate.setHours(23, 59, 59, 999);
+                
+                // Verificar se o contrato já tem um pagamento para este mês
+                const hasCurrentPayment = contract.payments && 
+                      contract.payments.some(p => {
+                          const paymentDate = new Date(p.date);
+                          return paymentDate.getMonth() === today.getMonth() &&
+                                 paymentDate.getFullYear() === today.getFullYear();
+                      });
+                
+                // Verificar se o contrato já tem um pagamento para o próximo mês
+                const hasNextMonthPayment = contract.payments && 
+                      contract.payments.some(p => {
+                          const paymentDate = new Date(p.date);
+                          return paymentDate.getMonth() === (today.getMonth() + 1) % 12 &&
+                                 paymentDate.getFullYear() === (today.getMonth() + 1 === 12 ? today.getFullYear() + 1 : today.getFullYear());
+                      });
+                
+                if (!hasCurrentPayment) {
+                    const daysOverdue = calculateDaysBetweenDates(today, currentDueDate);
+                    
+                    let status, statusClass;
+                    if (today > currentDueDate) {
+                        status = "Atrasado";
+                        statusClass = "bg-red-100 text-red-800";
+                    } else if (today.getDate() <= dueDay) {
+                        status = "Próximo";
+                        statusClass = "bg-blue-100 text-blue-800";
+                    } else {
+                        status = "Pendente";
+                        statusClass = "bg-yellow-100 text-yellow-800";
+                    }
+                    
+                    // Verificar se atende ao filtro de busca
+                    const matchesSearch = `${contract.studentName} ${contract.guardianName} ${contract.guardianCPF}`.toLowerCase().includes(filter.toLowerCase());
+                    
+                    if (matchesSearch) {
+                        pendenciesList.push({
+                            contractId: contract.id,
+                            studentName: contract.studentName,
+                            guardianName: contract.guardianName,
+                            monthlyFee: monthlyFee,
+                            dueDate: currentDueDate,
+                            status: status,
+                            statusClass: statusClass,
+                            days: daysOverdue,
+                            contract: contract,
+                            type: 'current'
+                        });
+                    }
+                }
+                
+                // Adicionar o próximo mês para análise, mesmo que o atual já tenha sido pago
+                if (!hasNextMonthPayment) {
+                    const daysToNextPayment = calculateDaysBetweenDates(today, nextDueDate);
+                    
+                    pendenciesList.push({
+                        contractId: contract.id,
+                        studentName: contract.studentName,
+                        guardianName: contract.guardianName,
+                        monthlyFee: monthlyFee,
+                        dueDate: nextDueDate,
+                        status: "Futuro",
+                        statusClass: "bg-gray-100 text-gray-800",
+                        days: daysToNextPayment,
+                        contract: contract,
+                        type: 'next'
+                    });
+                }
+            });
+            
+            // Atualizar contadores de status
+            updatePendenciesStats();
+            
+            // Renderizar pendências filtradas
+            filteredPendencies = pendenciesList.filter(pendency => {
+                const matchesSearch = `${pendency.studentName} ${pendency.guardianName}`.toLowerCase().includes(filter.toLowerCase());
+                return matchesSearch;
+            });
+            renderPaginatedPendencies();
+        }
         
         function updateDashboardStats() {
-            
             const totalContractsEl = document.getElementById('totalContracts');
             if (totalContractsEl) totalContractsEl.textContent = allContracts.length;
-
             
             const activeCount = allContracts.filter(c => c.status === "Ativo").length;
             const activeContractsEl = document.getElementById('activeContracts');
             if (activeContractsEl) activeContractsEl.textContent = activeCount;
-
             
             const totalReceived = allContracts.reduce((sum, c) => {
                 return sum + calculateTotalReceived(c);
             }, 0);
             const totalReceivedEl = document.getElementById('totalReceived');
             if (totalReceivedEl) totalReceivedEl.textContent = formatCurrency(totalReceived);
-
             
             const uniqueClasses = new Set(allContracts.map(c => c.classGroup));
             const totalClassesEl = document.getElementById('totalClasses');
             if (totalClassesEl) totalClassesEl.textContent = uniqueClasses.size;
         }
-
+        
+        function updatePendenciesStats() {
+            const pendingCount = pendenciesList.filter(p => p.status === "Pendente").length;
+            const overdueCount = pendenciesList.filter(p => p.status === "Atrasado").length;
+            const nextCount = pendenciesList.filter(p => p.status === "Próximo").length;
+            
+            document.getElementById('pendingPayments').textContent = pendingCount;
+            document.getElementById('overduePayments').textContent = overdueCount;
+            document.getElementById('nextPayments').textContent = nextCount;
+        }
         
         function renderPaginatedContracts() {
             const contractsTableBody = document.getElementById("contractsTableBody");
             const emptyState = document.getElementById("emptyState");
 
             contractsTableBody.innerHTML = "";
-
             
             const totalPages = Math.ceil(filteredContracts.length / contractsPerPage);
             const startIndex = (currentPage - 1) * contractsPerPage;
             const endIndex = Math.min(startIndex + contractsPerPage, filteredContracts.length);
             const paginatedContracts = filteredContracts.slice(startIndex, endIndex);
-
             
             const paginationFrom = document.getElementById('paginationFrom');
             const paginationTo = document.getElementById('paginationTo');
             const paginationTotal = document.getElementById('paginationTotal');
-            
+
             if (paginationFrom) paginationFrom.textContent = filteredContracts.length > 0 ? startIndex + 1 : 0;
             if (paginationTo) paginationTo.textContent = endIndex;
             if (paginationTotal) paginationTotal.textContent = filteredContracts.length;
-
             
             renderPageNumbers(totalPages);
-
             
             if (paginatedContracts.length === 0) {
                 if (emptyState) emptyState.classList.remove("hidden");
@@ -1013,7 +1537,6 @@
             }
 
             if (emptyState) emptyState.classList.add("hidden");
-
             
             paginatedContracts.forEach((contract) => {
                 const totalReceived = calculateTotalReceived(contract);
@@ -1022,9 +1545,8 @@
                 const row = document.createElement("tr");
                 row.className = "hover:bg-gray-50";
                 
-                
                 const deleteButtonStyle = currentUser && currentUser.role === 'Administrador' ? '' : 'hidden';
-                
+
                 row.innerHTML = `
                     <td class="px-6 py-4 whitespace-nowrap">
                         <div class="flex items-center">
@@ -1068,6 +1590,9 @@
                         <button class="text-green-600 hover:text-green-900 mr-3 payment-btn" data-id="${contract.id}">
                             <i class="fas fa-money-bill-wave"></i>
                         </button>
+                        <button class="text-green-500 hover:text-green-700 mr-3 whatsapp-btn" data-phone="${contract.phone}">
+                            <i class="fab fa-whatsapp"></i>
+                        </button>
                         <button class="text-red-600 hover:text-red-900 delete-btn ${deleteButtonStyle}" data-id="${contract.id}">
                             <i class="fas fa-trash-alt"></i>
                         </button>
@@ -1075,21 +1600,142 @@
                 `;
                 contractsTableBody.appendChild(row);
             });
-
             
             addContractButtonListeners();
         }
+        
+        function renderPaginatedPendencies() {
+            const pendenciesTableBody = document.getElementById("pendenciesTableBody");
+            const emptyPendencies = document.getElementById("emptyPendencies");
 
+            pendenciesTableBody.innerHTML = "";
+            
+            const totalPages = Math.ceil(filteredPendencies.length / pendenciesPerPage);
+            const startIndex = (currentPendenciesPage - 1) * pendenciesPerPage;
+            const endIndex = Math.min(startIndex + pendenciesPerPage, filteredPendencies.length);
+            const paginatedPendencies = filteredPendencies.slice(startIndex, endIndex);
+            
+            const pendenciesFrom = document.getElementById('pendenciesFrom');
+            const pendenciesTo = document.getElementById('pendenciesTo');
+            const pendenciesTotal = document.getElementById('pendenciesTotal');
+
+            if (pendenciesFrom) pendenciesFrom.textContent = filteredPendencies.length > 0 ? startIndex + 1 : 0;
+            if (pendenciesTo) pendenciesTo.textContent = endIndex;
+            if (pendenciesTotal) pendenciesTotal.textContent = filteredPendencies.length;
+            
+            renderPendenciesPageNumbers(totalPages);
+            
+            if (paginatedPendencies.length === 0) {
+                if (emptyPendencies) emptyPendencies.classList.remove("hidden");
+                return;
+            }
+
+            if (emptyPendencies) emptyPendencies.classList.add("hidden");
+            
+            // Ordenar pendências por status (primeiro atrasados, depois pendentes, depois próximos)
+            paginatedPendencies.sort((a, b) => {
+                const statusOrder = {
+                    "Atrasado": 1,
+                    "Pendente": 2,
+                    "Próximo": 3,
+                    "Futuro": 4
+                };
+                return statusOrder[a.status] - statusOrder[b.status];
+            });
+            
+            // Agrupar pendências por contrato para evitar duplicação do nome do titular
+            const pendenciesGroupedByContract = {};
+            
+            paginatedPendencies.forEach(pendency => {
+                if (!pendenciesGroupedByContract[pendency.contractId]) {
+                    pendenciesGroupedByContract[pendency.contractId] = [];
+                }
+                pendenciesGroupedByContract[pendency.contractId].push(pendency);
+            });
+            
+            // Renderizar apenas uma linha por contrato com as pendências agrupadas
+            for (const contractId in pendenciesGroupedByContract) {
+                const contractPendencies = pendenciesGroupedByContract[contractId];
+                const firstPendency = contractPendencies[0];
+                
+                // Criar uma única linha para o contrato
+                const row = document.createElement("tr");
+                row.className = "hover:bg-gray-50";
+                
+                // Determinar o status mais crítico para exibição
+                const statusToShow = contractPendencies.find(p => p.status === "Atrasado") || 
+                                    contractPendencies.find(p => p.status === "Pendente") ||
+                                    contractPendencies.find(p => p.status === "Próximo") ||
+                                    contractPendencies[0];
+                
+                // Mostrar tanto o vencimento atual quanto o próximo se disponível
+                const hasCurrent = contractPendencies.some(p => p.type === 'current');
+                const hasNext = contractPendencies.some(p => p.type === 'next');
+                
+                let dueDateText = '';
+                if (hasCurrent && hasNext) {
+                    dueDateText = `${formatDate(contractPendencies.find(p => p.type === 'current').dueDate)} e ${formatDate(contractPendencies.find(p => p.type === 'next').dueDate)}`;
+                } else if (hasCurrent) {
+                    dueDateText = formatDate(contractPendencies.find(p => p.type === 'current').dueDate);
+                } else if (hasNext) {
+                    dueDateText = formatDate(contractPendencies.find(p => p.type === 'next').dueDate);
+                }
+                
+                const daysText = statusToShow.status === "Atrasado" ? 
+                    `${Math.abs(statusToShow.days)} atrasado(s)` : 
+                    statusToShow.status === "Próximo" ? 
+                    `${statusToShow.days} dias` : 
+                    statusToShow.status === "Futuro" ? 
+                    `Em ${statusToShow.days} dias` : "";
+                
+                row.innerHTML = `
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="flex items-center">
+                            <div class="flex-shrink-0 h-10 w-10 rounded-full bg-indigo-100 flex items-center justify-center">
+                                <i class="fas fa-child text-indigo-600"></i>
+                            </div>
+                            <div class="ml-4">
+                                <div class="text-sm font-medium text-gray-900">${firstPendency.studentName}</div>
+                                <div class="text-sm text-gray-500">${firstPendency.guardianName}</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        ${formatCurrency(firstPendency.monthlyFee)}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        ${dueDateText}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${statusToShow.statusClass}">
+                            ${statusToShow.status}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        ${daysText}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                        <button class="text-indigo-600 hover:text-indigo-900 mr-3 view-pendency-btn" data-id="${firstPendency.contractId}">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                        <button class="text-green-600 hover:text-green-900 payment-btn" data-id="${firstPendency.contractId}">
+                            <i class="fas fa-money-bill-wave"></i>
+                        </button>
+                    </td>
+                `;
+                pendenciesTableBody.appendChild(row);
+            }
+            
+            addPendenciesButtonListeners();
+        }
         
         function renderPageNumbers(totalPages) {
             const pageNumbersContainer = document.getElementById('pageNumbers');
             if (!pageNumbersContainer) return;
             
             pageNumbersContainer.innerHTML = '';
-
             
             addPageNumber(1);
-
             
             if (currentPage > 3) {
                 const ellipsis = document.createElement('span');
@@ -1097,25 +1743,21 @@
                 ellipsis.textContent = '...';
                 pageNumbersContainer.appendChild(ellipsis);
             }
-
             
             for (let i = Math.max(2, currentPage - 1); i <= Math.min(totalPages - 1, currentPage + 1); i++) {
                 addPageNumber(i);
             }
-
             
             if (currentPage < totalPages - 2) {
                 const ellipsis = document.createElement('span');
-                ellipsis.className = 'relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700';
+                ellipsis.className = 'relative inline-flex items-center px=4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700';
                 ellipsis.textContent = '...';
                 pageNumbersContainer.appendChild(ellipsis);
             }
-
             
             if (totalPages > 1) {
                 addPageNumber(totalPages);
             }
-
             
             const prevPageBtn = document.getElementById('prevPage');
             const nextPageBtn = document.getElementById('nextPage');
@@ -1123,8 +1765,44 @@
             if (prevPageBtn) prevPageBtn.disabled = currentPage === 1;
             if (nextPageBtn) nextPageBtn.disabled = currentPage === totalPages;
         }
-
-    
+        
+        function renderPendenciesPageNumbers(totalPages) {
+            const pendenciesNumbersContainer = document.getElementById('pendenciesNumbers');
+            if (!pendenciesNumbersContainer) return;
+            
+            pendenciesNumbersContainer.innerHTML = '';
+            
+            addPendencyPageNumber(1);
+            
+            if (currentPendenciesPage > 3) {
+                const ellipsis = document.createElement('span');
+                ellipsis.className = 'relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700';
+                ellipsis.textContent = '...';
+                pendenciesNumbersContainer.appendChild(ellipsis);
+            }
+            
+            for (let i = Math.max(2, currentPendenciesPage - 1); i <= Math.min(totalPages - 1, currentPendenciesPage + 1); i++) {
+                addPendencyPageNumber(i);
+            }
+            
+            if (currentPendenciesPage < totalPages - 2) {
+                const ellipsis = document.createElement('span');
+                ellipsis.className = 'relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700';
+                ellipsis.textContent = '...';
+                pendenciesNumbersContainer.appendChild(ellipsis);
+            }
+            
+            if (totalPages > 1) {
+                addPendencyPageNumber(totalPages);
+            }
+            
+            const prevPendenciesBtn = document.getElementById('prevPendencies');
+            const nextPendenciesBtn = document.getElementById('nextPendencies');
+            
+            if (prevPendenciesBtn) prevPendenciesBtn.disabled = currentPendenciesPage === 1;
+            if (nextPendenciesBtn) nextPendenciesBtn.disabled = currentPendenciesPage === totalPages;
+        }
+        
         function addPageNumber(page) {
             const pageNumbersContainer = document.getElementById('pageNumbers');
             if (!pageNumbersContainer) return;
@@ -1138,25 +1816,35 @@
             });
             pageNumbersContainer.appendChild(pageBtn);
         }
-
+        
+        function addPendencyPageNumber(page) {
+            const pendenciesNumbersContainer = document.getElementById('pendenciesNumbers');
+            if (!pendenciesNumbersContainer) return;
+            
+            const pageBtn = document.createElement('button');
+            pageBtn.className = `relative inline-flex items-center px-4 py-2 border text-sm font-medium ${currentPendenciesPage === page ? 'z-10 bg-indigo-50 border-indigo-500 text-indigo-600' : 'bg-white border-gray-300 text-gray-500 hover:bg-gray-50'}`;
+            pageBtn.textContent = page;
+            pageBtn.addEventListener('click', () => {
+                currentPendenciesPage = page;
+                renderPaginatedPendencies();
+            });
+            pendenciesNumbersContainer.appendChild(pageBtn);
+        }
         
         function addContractButtonListeners() {
-            
             document.querySelectorAll('.view-btn').forEach(btn => {
                 btn.addEventListener('click', (e) => {
                     const contractId = e.currentTarget.getAttribute('data-id');
                     viewContract(contractId);
                 });
             });
-
-           
+            
             document.querySelectorAll('.edit-btn').forEach(btn => {
                 btn.addEventListener('click', (e) => {
                     const contractId = e.currentTarget.getAttribute('data-id');
                     editContract(contractId);
                 });
             });
-
             
             document.querySelectorAll('.payment-btn').forEach(btn => {
                 btn.addEventListener('click', (e) => {
@@ -1164,7 +1852,18 @@
                     showPaymentModal(contractId);
                 });
             });
-
+            
+            document.querySelectorAll('.whatsapp-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const phoneNumber = e.currentTarget.getAttribute('data-phone');
+                    if (phoneNumber) {
+                        // Remove todos os caracteres não numéricos
+                        const cleanPhone = phoneNumber.replace(/\D/g, '');
+                        // Abre o WhatsApp com o número formatado
+                        window.open(`https://wa.me/55${cleanPhone}`, '_blank');
+                    }
+                });
+            });
             
             document.querySelectorAll('.delete-btn').forEach(btn => {
                 btn.addEventListener('click', (e) => {
@@ -1178,7 +1877,22 @@
                 });
             });
         }
-
+        
+        function addPendenciesButtonListeners() {
+            document.querySelectorAll('.view-pendency-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const contractId = e.currentTarget.getAttribute('data-id');
+                    showPaymentTimeline(contractId);
+                });
+            });
+            
+            document.querySelectorAll('.payment-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const contractId = e.currentTarget.getAttribute('data-id');
+                    showPaymentModal(contractId);
+                });
+            });
+        }
         
         function viewContract(contractId) {
             const contract = allContracts.find(c => c.id === contractId);
@@ -1215,7 +1929,7 @@
                         </div>
                     </div>
                     
-                    <div class="bg-blue-50 p-4 rounded-lg md:col-span-2">
+                    <div class="bg-blue-50 p=4 rounded-lg md:col-span-2">
                         <h4 class="text-lg font-medium text-blue-800 mb-3 border-b pb-2">
                             <i class="fas fa-file-signature mr-2"></i> Dados do Contrato
                         </h4>
@@ -1266,7 +1980,7 @@
                                     ${contract.payments.map(payment => `
                                         <tr>
                                             <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-500">${formatDate(payment.date)}</td>
-                                            <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-500">${formatCurrency(payment.amount)}</td>
+                                            <td class="px=4 py-2 whitespace-nowrap text-sm text-gray-500">${formatCurrency(payment.amount)}</td>
                                         </tr>
                                     `).join('')}
                                 </tbody>
@@ -1276,26 +1990,78 @@
                     ` : ''}
                 </div>
             `;
-
             
             currentContractId = contractId;
-
             
             const contractModal = document.getElementById('contractModal');
             if (contractModal) contractModal.classList.remove('hidden');
-            
-            
         }
-
+        
+        function showPaymentTimeline(contractId) {
+            const contract = allContracts.find(c => c.id === contractId);
+            if (!contract) return;
+            
+            document.getElementById('timelineStudentName').textContent = contract.studentName;
+            document.getElementById('timelineGuardianName').textContent = contract.guardianName;
+            document.getElementById('timelineMonthlyFee').textContent = formatCurrency(contract.monthlyFee);
+            document.getElementById('timelineDueDay').textContent = contract.dueDate;
+            
+            const timelineContainer = document.getElementById('paymentTimeline');
+            timelineContainer.innerHTML = '';
+            
+            // Gerar cronograma dos próximos 6 meses
+            const payments = generateNextPayments(contract, 6);
+            
+            payments.forEach(payment => {
+                const timelineItem = document.createElement('div');
+                timelineItem.className = `timeline-item ${payment.status}`;
+                
+                let statusText, statusClass;
+                if (payment.paid) {
+                    statusText = `Pago em ${formatDate(payment.paidDate)}`;
+                    statusClass = 'bg-green-50 text-green-800';
+                } else if (payment.status === 'pending') {
+                    statusText = `Pendente - Vencerá em ${formatDate(payment.dueDate)}`;
+                    statusClass = 'bg-yellow-50 text-yellow-800';
+                } else if (payment.status === 'overdue') {
+                    statusText = `Atrasado desde ${formatDate(payment.dueDate)}`;
+                    statusClass = 'bg-red-50 text-red-800';
+                } else {
+                    statusText = `Vence em ${formatDate(payment.dueDate)}`;
+                    statusClass = 'bg-gray-50 text-gray-800';
+                }
+                
+                timelineItem.innerHTML = `
+                    <div class="timeline-content ${statusClass}">
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <p class="font-medium">${payment.month} ${payment.year}</p>
+                                <p class="text-sm">${statusText}</p>
+                            </div>
+                            <div class="text-lg font-semibold">
+                                ${formatCurrency(payment.amount)}
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                timelineContainer.appendChild(timelineItem);
+            });
+            
+            // Atualizar informações de liberação
+            document.getElementById('releaseInfo').textContent = calculateReleaseInfo(contract);
+            
+            currentContractId = contractId;
+            
+            const timelineModal = document.getElementById('timelineModal');
+            if (timelineModal) timelineModal.classList.remove('hidden');
+        }
         
         function editContract(contractId) {
-           
             document.querySelector('[data-tab="register"]').click();
-
             
             const contract = allContracts.find(c => c.id === contractId);
             if (!contract) return;
-
             
             document.getElementById('studentName').value = contract.studentName;
             document.getElementById('birthDate').value = contract.birthDate.split('T')[0];
@@ -1307,28 +2073,22 @@
             document.getElementById('startDate').value = contract.startDate.split('T')[0];
             document.getElementById('monthlyFee').value = contract.monthlyFee;
             document.getElementById('dueDate').value = contract.dueDate;
-
             
             isEditing = true;
             currentContractId = contractId;
-
             
             document.getElementById('formTitle').textContent = 'Editar Contrato';
             document.getElementById('submitBtnText').textContent = 'Atualizar Contrato';
             document.getElementById('cancelEditBtn').classList.remove('hidden');
-
             
             window.scrollTo(0, 0);
         }
-
         
         function showPaymentModal(contractId) {
             const contract = allContracts.find(c => c.id === contractId);
             if (!contract) return;
-
             
             currentContractId = contractId;
-
             
             const paymentInfo = document.getElementById('paymentInfo');
             if (paymentInfo) {
@@ -1347,24 +2107,56 @@
                     </p>
                 `;
             }
-
             
             const today = new Date();
             const formattedDate = today.toISOString().split('T')[0];
             document.getElementById('paymentDate').value = formattedDate;
-
             
             document.getElementById('paymentAmount').value = contract.monthlyFee;
-
+            
+            // Configurar opções de pagamento adiantado
+            const advancedMonthSelect = document.getElementById('advancedMonth');
+            if (advancedMonthSelect) {
+                advancedMonthSelect.innerHTML = '';
+                
+                // Gerar opções para os próximos 6 meses
+                for (let i = 1; i <= 6; i++) {
+                    const monthDate = new Date();
+                    monthDate.setMonth(today.getMonth() + i);
+                    
+                    const monthName = getMonthName(monthDate.getMonth());
+                    const year = monthDate.getFullYear();
+                    
+                    const option = document.createElement('option');
+                    option.value = `${monthDate.getMonth() + 1}-${year}`;
+                    option.textContent = `${monthName} ${year}`;
+                    advancedMonthSelect.appendChild(option);
+                }
+                
+                // Configurar data padrão para o próximo mês
+                document.getElementById('advancedPaymentDate').value = formattedDate;
+                document.getElementById('advancedPaymentAmount').value = contract.monthlyFee;
+            }
+            
+            // Adicionar listeners para alternar entre os tipos de pagamento
+            document.getElementById('currentPayment').addEventListener('change', () => {
+                document.getElementById('currentPaymentOptions').style.display = 'block';
+                document.getElementById('advancedPaymentOptions').classList.remove('visible');
+                document.getElementById('advancedPaymentOptions').classList.add('hidden');
+            });
+            
+            document.getElementById('advancedPayment').addEventListener('change', () => {
+                document.getElementById('currentPaymentOptions').style.display = 'none';
+                document.getElementById('advancedPaymentOptions').classList.remove('hidden');
+                document.getElementById('advancedPaymentOptions').classList.add('visible');
+            });
             
             const paymentModal = document.getElementById('paymentModal');
             if (paymentModal) paymentModal.classList.remove('hidden');
         }
-
         
         async function processPayment(contractId, paymentData) {
             try {
-                
                 const contractRef = db.collection("contratos").doc(contractId);
                 const doc = await contractRef.get();
                 
@@ -1372,16 +2164,28 @@
                     throw new Error("Contrato não encontrado");
                 }
                 
-                
                 const contract = doc.data();
                 const payments = contract.payments || [];
-
+                
+                // Verificar se já existe um pagamento para este mês
+                if (!paymentData.advanced) { // Só verificamos para pagamentos não adiantados
+                    const paymentDate = new Date(paymentData.date);
+                    const hasPaymentForThisMonth = payments.some(p => {
+                        const existingDate = new Date(p.date);
+                        return existingDate.getMonth() === paymentDate.getMonth() &&
+                               existingDate.getFullYear() === paymentDate.getFullYear();
+                    });
+                    
+                    if (hasPaymentForThisMonth) {
+                        throw new Error("Já existe um pagamento registrado para este mês. Apenas pagamentos adiantados são permitidos.");
+                    }
+                }
                 
                 payments.push({
                     date: paymentData.date,
-                    amount: parseFloat(paymentData.amount)
+                    amount: parseFloat(paymentData.amount),
+                    advanced: paymentData.advanced || false
                 });
-
                 
                 await contractRef.update({
                     payments: payments
@@ -1389,12 +2193,12 @@
 
                 showSuccessMessage("Pagamento registrado com sucesso!");
                 loadContracts();
+                loadPendencies();
             } catch (error) {
                 console.error("Erro ao processar pagamento:", error);
                 throw error;
             }
         }
-
         
         function showDeleteConfirmation(contractId) {
             if (!currentUser || currentUser.role !== 'Administrador') {
@@ -1406,19 +2210,18 @@
             const deleteModal = document.getElementById('deleteModal');
             if (deleteModal) deleteModal.classList.remove('hidden');
         }
-
         
         async function deleteContract(contractId) {
             try {
                 await db.collection("contratos").doc(contractId).delete();
                 showSuccessMessage("Contrato excluído com sucesso!");
                 loadContracts();
+                loadPendencies();
             } catch (error) {
                 console.error("Erro ao excluir contrato:", error);
                 showSuccessMessage("Erro ao excluir contrato: " + error.message);
             }
         }
-
         
         const searchInput = document.getElementById("searchInput");
         if (searchInput) {
@@ -1429,7 +2232,14 @@
                 loadContracts(e.target.value, classFilter, activeFilter);
             });
         }
-
+        
+        const searchPendencies = document.getElementById("searchPendencies");
+        if (searchPendencies) {
+            searchPendencies.addEventListener("input", (e) => {
+                currentPendenciesPage = 1;
+                processPendencies(e.target.value);
+            });
+        }
         
         const classFilter = document.getElementById('classFilter');
         if (classFilter) {
@@ -1440,7 +2250,6 @@
                 loadContracts(searchValue, e.target.value, activeFilter);
             });
         }
-
         
         const activeFilter = document.getElementById('activeFilter');
         if (activeFilter) {
@@ -1451,7 +2260,13 @@
                 loadContracts(searchValue, classFilterValue, e.target.checked);
             });
         }
-
+        
+        const refreshPendencies = document.getElementById('refreshPendencies');
+        if (refreshPendencies) {
+            refreshPendencies.addEventListener('click', () => {
+                processPendencies(searchPendencies.value);
+            });
+        }
         
         const prevPageBtn = document.getElementById('prevPage');
         if (prevPageBtn) {
@@ -1473,7 +2288,27 @@
                 }
             });
         }
+        
+        const prevPendenciesBtn = document.getElementById('prevPendencies');
+        if (prevPendenciesBtn) {
+            prevPendenciesBtn.addEventListener('click', () => {
+                if (currentPendenciesPage > 1) {
+                    currentPendenciesPage--;
+                    renderPaginatedPendencies();
+                }
+            });
+        }
 
+        const nextPendenciesBtn = document.getElementById('nextPendencies');
+        if (nextPendenciesBtn) {
+            nextPendenciesBtn.addEventListener('click', () => {
+                const totalPages = Math.ceil(filteredPendencies.length / pendenciesPerPage);
+                if (currentPendenciesPage < totalPages) {
+                    currentPendenciesPage++;
+                    renderPaginatedPendencies();
+                }
+            });
+        }
         
         const closeModalBtn = document.getElementById('closeModalBtn');
         if (closeModalBtn) {
@@ -1483,7 +2318,15 @@
                 currentContractId = null;
             });
         }
-
+        
+        const closeTimelineModalBtn = document.getElementById('closeTimelineModalBtn');
+        if (closeTimelineModalBtn) {
+            closeTimelineModalBtn.addEventListener('click', () => {
+                const timelineModal = document.getElementById('timelineModal');
+                if (timelineModal) timelineModal.classList.add('hidden');
+                currentContractId = null;
+            });
+        }
         
         const printContractBtn = document.getElementById('printContractBtn');
         if (printContractBtn) {
@@ -1491,7 +2334,6 @@
                 window.print();
             });
         }
-
         
         const editContractBtn = document.getElementById('editContractBtn');
         if (editContractBtn) {
@@ -1503,7 +2345,6 @@
                 }
             });
         }
-
         
         const closePaymentModalBtn = document.getElementById('closePaymentModalBtn');
         if (closePaymentModalBtn) {
@@ -1526,17 +2367,32 @@
         const confirmPaymentBtn = document.getElementById('confirmPaymentBtn');
         if (confirmPaymentBtn) {
             confirmPaymentBtn.addEventListener('click', async () => {
-                const paymentDate = document.getElementById('paymentDate').value;
-                const paymentAmount = document.getElementById('paymentAmount').value;
+                const isAdvancedPayment = document.getElementById('advancedPayment').checked;
                 
-                if (!paymentDate || !paymentAmount) {
-                    showSuccessMessage("Por favor, preencha a data e o valor do pagamento");
-                    return;
+                let paymentDate, paymentAmount;
+                
+                if (isAdvancedPayment) {
+                    paymentDate = document.getElementById('advancedPaymentDate').value;
+                    paymentAmount = document.getElementById('advancedPaymentAmount').value;
+                    
+                    if (!paymentDate || !paymentAmount) {
+                        showSuccessMessage("Por favor, preencha a data e o valor do pagamento adiantado");
+                        return;
+                    }
+                } else {
+                    paymentDate = document.getElementById('paymentDate').value;
+                    paymentAmount = document.getElementById('paymentAmount').value;
+                    
+                    if (!paymentDate || !paymentAmount) {
+                        showSuccessMessage("Por favor, preencha a data e o valor do pagamento");
+                        return;
+                    }
                 }
 
                 const paymentData = {
                     date: paymentDate,
-                    amount: paymentAmount
+                    amount: paymentAmount,
+                    advanced: isAdvancedPayment
                 };
 
                 try {
@@ -1544,12 +2400,26 @@
                     const paymentModal = document.getElementById('paymentModal');
                     if (paymentModal) paymentModal.classList.add('hidden');
                     currentContractId = null;
+                    
+                    const timelineModal = document.getElementById('timelineModal');
+                    if (timelineModal) timelineModal.classList.add('hidden');
                 } catch (error) {
                     showSuccessMessage("Erro ao registrar pagamento: " + error.message);
                 }
             });
         }
-
+        
+        const registerPaymentBtn = document.getElementById('registerPaymentBtn');
+        if (registerPaymentBtn) {
+            registerPaymentBtn.addEventListener('click', () => {
+                const timelineModal = document.getElementById('timelineModal');
+                if (timelineModal) timelineModal.classList.add('hidden');
+                
+                if (currentContractId) {
+                    showPaymentModal(currentContractId);
+                }
+            });
+        }
         
         const cancelDeleteBtn = document.getElementById('cancelDeleteBtn');
         if (cancelDeleteBtn) {
@@ -1571,7 +2441,6 @@
                 }
             });
         }
-
         
         const cancelEditBtn = document.getElementById('cancelEditBtn');
         if (cancelEditBtn) {
@@ -1581,7 +2450,6 @@
             });
         }
 
-       
         const exportBtn = document.getElementById('exportBtn');
         if (exportBtn) {
             exportBtn.addEventListener('click', () => {
